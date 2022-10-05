@@ -25,7 +25,7 @@ class AuthRepositoryImpl: AuthRepository {
             val profileUpdates = UserProfileChangeRequest.Builder()
                 .setDisplayName(username)
                 .build()
-            user.updateProfile(profileUpdates)
+            user.updateProfile(profileUpdates).await()
             return true
         }
         return false
@@ -47,6 +47,12 @@ class AuthRepositoryImpl: AuthRepository {
     override fun onAuthChangeListener(listener: (FirebaseUser?) -> Unit) {
         auth.addAuthStateListener {
             listener(it.currentUser)
+        }
+    }
+
+    override fun removeAuthChangeListener() {
+        auth.removeAuthStateListener {
+            it.currentUser
         }
     }
 }

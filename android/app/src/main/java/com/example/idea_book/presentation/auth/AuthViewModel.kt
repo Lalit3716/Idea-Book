@@ -31,11 +31,11 @@ class AuthViewModel @Inject constructor(
         }
     }
 
-    fun signIn(email: String, password: String) {
+    private fun signIn(email: String, password: String) {
         launchInViewModelScope { authRepository.signIn(email, password) }
     }
 
-    fun signUp(username: String, email: String, password: String) {
+    private fun signUp(username: String, email: String, password: String) {
         launchInViewModelScope { authRepository.singUp(username, email, password) }
     }
 
@@ -43,15 +43,56 @@ class AuthViewModel @Inject constructor(
         launchInViewModelScope { authRepository.signOut() }
     }
 
-    private fun launchInViewModelScope(block: suspend () -> Boolean) {
+    private fun toggleAuthMode() {
+        _authState = authState.copy(isLoginMode = !authState.isLoginMode)
+        clearErrors()
+    }
+
+    private fun onChange(field: String, value: String) {
+        when(field) {
+            "email" -> _authState = authState.copy(email = value)
+            "password" -> _authState = authState.copy(password = value)
+            "username" -> _authState = authState.copy(username = value)
+        }
+    }
+
+    private fun clearErrors() {
+        _authState = authState.copy(
+            emailError = null,
+            passwordError = null,
+            usernameError = null,
+            firebaseError = null
+        )
+    }
+
+    private fun launchInViewModelScope(authAction: suspend () -> Boolean) {
         _authState = AuthState(isLoading = true)
         viewModelScope.launch {
-            val success = block()
+            val success = authAction()
             _authState = if (success) {
                 AuthState(isAuth = true)
             } else {
-                AuthState(error = "Something went wrong!")
+                AuthState(firebaseError = "Something went wrong!")
             }
         }
+    }
+
+    fun onEvent(event: AuthFormEvent) {
+        when (event) {
+            is AuthFormEvent.SignIn -> signIn(event.email, event.password)
+            is AuthFormEvent.SignUp -> signUp(event.username, event.email, event.password)
+            is AuthFormEvent.ToggleMode -> toggleAuthMode()
+            is AuthFormEvent.EmailChange -> onChange("email", event.email)
+            is AuthFormEvent.PasswordChange -> onChange("password", event.password)
+            is AuthFormEvent.UsernameChange -> onChange("username", event.username)
+            else -> {
+                Log.e("AuthViewModel", "Unknown event: $event")
+            }
+        }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+
     }
 }

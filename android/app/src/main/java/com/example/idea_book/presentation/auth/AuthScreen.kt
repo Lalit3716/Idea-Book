@@ -2,6 +2,7 @@ package com.example.idea_book.presentation.auth
 
 import android.util.Log
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -12,10 +13,13 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.R
+import com.example.idea_book.presentation.auth.components.AuthForm
 import com.example.idea_book.presentation.destinations.IdeasScreenDestination
 import com.example.idea_book.ui.theme.IdeaBookTheme
+import com.example.idea_book.ui.theme.IdeaImageBg
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -43,12 +47,23 @@ fun AuthScreen(
         contentColor = MaterialTheme.colors.onBackground,
     ) {
         Column {
-            Image(
-                painter = painterResource(id = R.drawable.idea),
-                contentDescription = "Logo",
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+            Box(
+                modifier = Modifier.fillMaxWidth().background(
+                    color = IdeaImageBg
+                )
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.idea),
+                    contentDescription = "Logo",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            AuthForm(state = state) {
+                viewModel.onEvent(it)
+            }
         }
     }
 }

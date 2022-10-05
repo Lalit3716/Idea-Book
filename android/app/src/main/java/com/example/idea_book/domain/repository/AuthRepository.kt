@@ -9,4 +9,5 @@ interface AuthRepository {
     fun isAuth(): Boolean
     fun getUser(): FirebaseUser
     fun onAuthChangeListener(listener: (FirebaseUser?) -> Unit)
+    fun removeAuthChangeListener()
 }
