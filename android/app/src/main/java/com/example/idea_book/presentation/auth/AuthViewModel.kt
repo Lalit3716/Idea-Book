@@ -6,22 +6,28 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.idea_book.domain.repository.AuthRepository
+import com.example.idea_book.domain.model.AuthActionResult
+import com.example.idea_book.domain.use_cases.AuthListenerUseCase
+import com.example.idea_book.domain.use_cases.SignInUseCase
+import com.example.idea_book.domain.use_cases.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authRepository: AuthRepository
-): ViewModel() {
+    private val signInUseCase: SignInUseCase,
+    private val signUpUseCase: SignUpUseCase,
+    private val authListenerUseCase: AuthListenerUseCase
+) : ViewModel() {
     private var _authState by mutableStateOf(AuthState())
     val authState: AuthState get() = _authState
 
     init {
         _authState = AuthState(isLoading = true)
         viewModelScope.launch {
-            authRepository.onAuthChangeListener { user ->
+            authListenerUseCase.addListener("AuthViewModel") { user ->
+                Log.i("AuthViewModel", "User: $user")
                 _authState = if (user != null) {
                     AuthState(isAuth = true)
                 } else {
@@ -32,15 +38,11 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun signIn(email: String, password: String) {
-        launchInViewModelScope { authRepository.signIn(email, password) }
+        launchInViewModelScope { signInUseCase.execute(email, password) }
     }
 
     private fun signUp(username: String, email: String, password: String) {
-        launchInViewModelScope { authRepository.singUp(username, email, password) }
-    }
-
-    fun signOut() {
-        launchInViewModelScope { authRepository.signOut() }
+        launchInViewModelScope { signUpUseCase.execute(username, email, password) }
     }
 
     private fun toggleAuthMode() {
@@ -49,7 +51,7 @@ class AuthViewModel @Inject constructor(
     }
 
     private fun onChange(field: String, value: String) {
-        when(field) {
+        when (field) {
             "email" -> _authState = authState.copy(email = value)
             "password" -> _authState = authState.copy(password = value)
             "username" -> _authState = authState.copy(username = value)
@@ -65,14 +67,26 @@ class AuthViewModel @Inject constructor(
         )
     }
 
-    private fun launchInViewModelScope(authAction: suspend () -> Boolean) {
-        _authState = AuthState(isLoading = true)
+    private fun launchInViewModelScope(authAction: suspend () -> AuthActionResult) {
+        _authState = authState.copy(isLoading = true)
         viewModelScope.launch {
-            val success = authAction()
-            _authState = if (success) {
-                AuthState(isAuth = true)
-            } else {
-                AuthState(firebaseError = "Something went wrong!")
+            Log.i("AuthViewModel", "launchInViewModelScope: before")
+            val res = authAction()
+            Log.i("AuthViewModel", "launchInViewModelScope: $res")
+            _authState = when (res) {
+                is AuthActionResult.Success -> {
+                    AuthState(isAuth = true)
+                }
+                is AuthActionResult.Error -> {
+                    val (emailError, passwordError, usernameError, firebaseError) = res
+                    authState.copy(
+                        emailError = emailError,
+                        passwordError = passwordError,
+                        usernameError = usernameError,
+                        firebaseError = firebaseError,
+                        isLoading = false
+                    )
+                }
             }
         }
     }
@@ -85,14 +99,12 @@ class AuthViewModel @Inject constructor(
             is AuthFormEvent.EmailChange -> onChange("email", event.email)
             is AuthFormEvent.PasswordChange -> onChange("password", event.password)
             is AuthFormEvent.UsernameChange -> onChange("username", event.username)
-            else -> {
-                Log.e("AuthViewModel", "Unknown event: $event")
-            }
+            is AuthFormEvent.ClearErrors -> clearErrors()
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-
+        authListenerUseCase.removeListener("AuthViewModel")
     }
 }

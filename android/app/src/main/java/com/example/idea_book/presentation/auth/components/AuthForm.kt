@@ -11,11 +11,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.idea_book.R
 import com.example.idea_book.presentation.auth.AuthFormEvent
 import com.example.idea_book.presentation.auth.AuthState
 
@@ -40,6 +43,34 @@ fun AuthForm(state: AuthState, emitEvent: (AuthFormEvent) -> Unit) {
                     .padding(30.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
+                if (state.firebaseError != null) {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(8.dp),
+                        backgroundColor = MaterialTheme.colors.error
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceAround,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.8f)
+                                    .padding(16.dp),
+                                overflow = TextOverflow.Ellipsis,
+                                text = state.firebaseError
+                            )
+                            IconButton(onClick = { emitEvent(AuthFormEvent.ClearErrors) }) {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_close),
+                                    contentDescription = "Close",
+                                    tint = MaterialTheme.colors.onError,
+                                )
+                            }
+                        }
+                    }
+                }
                 if (!state.isLoginMode)
                     OutlinedTextField(
                         value = state.username,
