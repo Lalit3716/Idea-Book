@@ -30,11 +30,16 @@ fun AuthScreen(
     val scrollState = rememberScrollState()
     val state = viewModel.authState
 
-    LaunchedEffect(key1 = state.isLoading) {
-        Log.i("AuthScreen", "LaunchedEffect: $state")
+    Log.i("AuthScreen", "state: $state")
+
+    LaunchedEffect(key1 = state.isAuth) {
         if (state.isAuth) {
             navigator?.navigate(IdeasScreenDestination())
         }
+    }
+
+    if (state.isAuth) {
+        return
     }
 
     Surface(

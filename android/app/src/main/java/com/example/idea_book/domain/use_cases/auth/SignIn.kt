@@ -1,4 +1,4 @@
-package com.example.idea_book.domain.use_cases
+package com.example.idea_book.domain.use_cases.auth
 
 import com.example.idea_book.core.validators.EmailValidator
 import com.example.idea_book.core.validators.PasswordValidator
@@ -11,7 +11,7 @@ class SignInUseCase @Inject constructor(
     private val emailValidator: EmailValidator,
     private val passwordValidator: PasswordValidator
 ) {
-    suspend fun execute(email: String, password: String): AuthActionResult {
+    suspend operator fun invoke(email: String, password: String): AuthActionResult {
         val emailErr = emailValidator(email)
         val passwordErr = passwordValidator(password)
 

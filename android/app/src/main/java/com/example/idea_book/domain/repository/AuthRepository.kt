@@ -8,5 +8,5 @@ interface AuthRepository {
     suspend fun signOut(): Boolean
     fun isAuth(): Boolean
     fun getUser(): FirebaseUser?
-    fun onAuthChangeListener(listener: (FirebaseUser?) -> Unit)
+    fun onAuthChangeListener()
 }

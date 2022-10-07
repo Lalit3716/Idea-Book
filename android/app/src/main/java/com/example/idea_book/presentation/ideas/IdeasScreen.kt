@@ -5,10 +5,8 @@ import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.presentation.destinations.AuthScreenDestination
-import com.example.idea_book.ui.theme.IdeaBookTheme
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
@@ -19,24 +17,24 @@ fun IdeasScreen(
     viewModel: IdeasViewModel = hiltViewModel()
 ) {
     val isAuth = viewModel.isAuth
-    LaunchedEffect(key1 = isAuth) {
+    val user = viewModel.user
+    val token = viewModel.token
+
+    LaunchedEffect(isAuth) {
         if (!isAuth) {
-            navigator?.navigate(AuthScreenDestination())
+            navigator?.navigate(AuthScreenDestination)
         }
+    }
+
+    if (user == null) {
+        return
     }
 
     Column {
-        Text(text = "Welcome Back ${viewModel.getUser()?.displayName}")
-        Button(onClick = viewModel::logout) {
-            Text(text = "Logout")
+        Text(text = "Welcome back ${user.displayName}")
+        Text(text = "Your id token is $token")
+        Button(onClick = viewModel::signOut) {
+            Text(text = "Sign out")
         }
-    }
-}
-
-@Preview
-@Composable
-fun IdeasScreenPreview() {
-    IdeaBookTheme {
-        IdeasScreen()
     }
 }

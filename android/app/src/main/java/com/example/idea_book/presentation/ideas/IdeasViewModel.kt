@@ -5,42 +5,34 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.idea_book.domain.repository.AuthRepository
-import com.example.idea_book.domain.use_cases.AuthListenerUseCase
-import com.google.firebase.auth.FirebaseUser
+import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
+import com.example.idea_book.domain.use_cases.auth.GetUserUseCase
+import com.example.idea_book.domain.use_cases.auth.SignOutUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class IdeasViewModel @Inject constructor(
-    private val authRepository: AuthRepository,
-    private val authListenerUseCase: AuthListenerUseCase
+    getUserUseCase: GetUserUseCase,
+    private val signOutUseCase: SignOutUseCase,
+    private val getTokenUseCase: GetTokenUseCase
 ): ViewModel() {
-    var isAuth by mutableStateOf(true)
+    var isAuth by mutableStateOf(getUserUseCase() != null)
+    var user by mutableStateOf(getUserUseCase())
+    var token: String? by mutableStateOf(null)
 
     init {
         viewModelScope.launch {
-            authListenerUseCase.addListener("IdeasViewModel") {
-                if (it == null) {
-                    isAuth = false
-                }
-            }
+            token = getTokenUseCase()
         }
     }
 
-    fun logout() {
+    fun signOut() {
         viewModelScope.launch {
-            authRepository.signOut()
+            signOutUseCase()
+            isAuth = false
+            user = null
         }
-    }
-
-    fun getUser(): FirebaseUser? {
-        return authRepository.getUser()
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        authListenerUseCase.removeListener("IdeasViewModel")
     }
 }

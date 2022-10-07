@@ -1,15 +1,14 @@
 package com.example.idea_book.presentation.auth
 
-import android.util.Log
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.idea_book.domain.model.AuthActionResult
-import com.example.idea_book.domain.use_cases.AuthListenerUseCase
-import com.example.idea_book.domain.use_cases.SignInUseCase
-import com.example.idea_book.domain.use_cases.SignUpUseCase
+import com.example.idea_book.domain.use_cases.auth.GetUserUseCase
+import com.example.idea_book.domain.use_cases.auth.SignInUseCase
+import com.example.idea_book.domain.use_cases.auth.SignUpUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -18,31 +17,26 @@ import javax.inject.Inject
 class AuthViewModel @Inject constructor(
     private val signInUseCase: SignInUseCase,
     private val signUpUseCase: SignUpUseCase,
-    private val authListenerUseCase: AuthListenerUseCase
+    getUserUseCase: GetUserUseCase
 ) : ViewModel() {
     private var _authState by mutableStateOf(AuthState())
     val authState: AuthState get() = _authState
 
     init {
-        _authState = AuthState(isLoading = true)
-        viewModelScope.launch {
-            authListenerUseCase.addListener("AuthViewModel") { user ->
-                Log.i("AuthViewModel", "User: $user")
-                _authState = if (user != null) {
-                    AuthState(isAuth = true)
-                } else {
-                    AuthState(isAuth = false)
-                }
-            }
+        val user = getUserUseCase()
+        if (user != null) {
+            _authState = AuthState(
+                isAuth = true
+            )
         }
     }
 
     private fun signIn(email: String, password: String) {
-        launchInViewModelScope { signInUseCase.execute(email, password) }
+        launchInViewModelScope { signInUseCase(email, password) }
     }
 
     private fun signUp(username: String, email: String, password: String) {
-        launchInViewModelScope { signUpUseCase.execute(username, email, password) }
+        launchInViewModelScope { signUpUseCase(username, email, password) }
     }
 
     private fun toggleAuthMode() {
@@ -70,9 +64,7 @@ class AuthViewModel @Inject constructor(
     private fun launchInViewModelScope(authAction: suspend () -> AuthActionResult) {
         _authState = authState.copy(isLoading = true)
         viewModelScope.launch {
-            Log.i("AuthViewModel", "launchInViewModelScope: before")
             val res = authAction()
-            Log.i("AuthViewModel", "launchInViewModelScope: $res")
             _authState = when (res) {
                 is AuthActionResult.Success -> {
                     AuthState(isAuth = true)
@@ -101,10 +93,5 @@ class AuthViewModel @Inject constructor(
             is AuthFormEvent.UsernameChange -> onChange("username", event.username)
             is AuthFormEvent.ClearErrors -> clearErrors()
         }
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        authListenerUseCase.removeListener("AuthViewModel")
     }
 }
