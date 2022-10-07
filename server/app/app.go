@@ -1,7 +1,6 @@
 package app
 
 import (
-	firebase "firebase.google.com/go"
 	"github.com/Lalit3716/ideabook_server/app/config"
 	"github.com/gorilla/mux"
 	"log"
@@ -9,13 +8,12 @@ import (
 )
 
 type App struct {
-	Router      *mux.Router
-	FirebaseApp *firebase.App
+	Router *mux.Router
 }
 
 func (a *App) Initialize() {
 	a.Router = mux.NewRouter()
-	a.FirebaseApp = config.InitFirebaseApp()
+	config.InitFirebaseApp()
 }
 
 func (a *App) Run(addr string) {

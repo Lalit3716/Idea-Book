@@ -2,21 +2,30 @@ package config
 
 import (
 	"context"
+	"firebase.google.com/go/auth"
 	"fmt"
 
 	firebase "firebase.google.com/go"
-	"google.golang.org/api/option"
 )
 
-func InitFirebaseApp() *firebase.App {
-	opt := option.WithCredentialsFile("../google-services.json")
+var Client *auth.Client
+var Ctx *context.Context
 
-	app, err := firebase.NewApp(context.Background(), nil, opt)
+func InitFirebaseApp() {
+	ctx := context.Background()
+	app, err := firebase.NewApp(ctx, nil)
 
 	if err != nil {
-		fmt.Println("Error initializing firebase app:", err)
+		fmt.Println("Error initializing app:", err)
 	}
 
-	fmt.Println("Firebase app initialized successfully")
-	return app
+	client, e := app.Auth(ctx)
+	if e != nil {
+		fmt.Println("Error getting Auth client:", err)
+	}
+
+	fmt.Println("Firebase app initialized Successfully")
+
+	Client = client
+	Ctx = &ctx
 }
