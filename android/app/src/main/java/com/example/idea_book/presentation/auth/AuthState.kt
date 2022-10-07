@@ -1,7 +1,7 @@
 package com.example.idea_book.presentation.auth
 
 data class AuthState(
-    val isLoginMode: Boolean = false,
+    val isLoginMode: Boolean = true,
     val isAuth: Boolean = false,
     val isLoading: Boolean = false,
     val username: String = "",

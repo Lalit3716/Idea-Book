@@ -67,7 +67,10 @@ class AuthViewModel @Inject constructor(
             val res = authAction()
             _authState = when (res) {
                 is AuthActionResult.Success -> {
-                    AuthState(isAuth = true)
+                    authState.copy(
+                        isLoading = false,
+                        isAuth = true
+                    )
                 }
                 is AuthActionResult.Error -> {
                     val (emailError, passwordError, usernameError, firebaseError) = res

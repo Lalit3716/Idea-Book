@@ -18,7 +18,6 @@ class IdeasViewModel @Inject constructor(
     private val signOutUseCase: SignOutUseCase,
     private val getTokenUseCase: GetTokenUseCase
 ): ViewModel() {
-    var isAuth by mutableStateOf(getUserUseCase() != null)
     var user by mutableStateOf(getUserUseCase())
     var token: String? by mutableStateOf(null)
 
@@ -31,7 +30,6 @@ class IdeasViewModel @Inject constructor(
     fun signOut() {
         viewModelScope.launch {
             signOutUseCase()
-            isAuth = false
             user = null
         }
     }

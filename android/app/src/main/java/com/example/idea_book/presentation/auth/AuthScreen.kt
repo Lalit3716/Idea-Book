@@ -15,8 +15,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.R
+import com.example.idea_book.core.presentation.components.BlankScreen
 import com.example.idea_book.presentation.auth.components.AuthForm
 import com.example.idea_book.presentation.destinations.IdeasScreenDestination
+import com.example.idea_book.presentation.destinations.OnBoardingScreenDestination
 import com.example.idea_book.ui.theme.IdeaImageBg
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -30,15 +32,18 @@ fun AuthScreen(
     val scrollState = rememberScrollState()
     val state = viewModel.authState
 
-    Log.i("AuthScreen", "state: $state")
-
     LaunchedEffect(key1 = state.isAuth) {
         if (state.isAuth) {
-            navigator?.navigate(IdeasScreenDestination())
+            if (state.isLoginMode) {
+                navigator?.navigate(IdeasScreenDestination)
+            } else {
+                navigator?.navigate(OnBoardingScreenDestination)
+            }
         }
     }
 
     if (state.isAuth) {
+        BlankScreen()
         return
     }
 
