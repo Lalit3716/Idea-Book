@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"github.com/joho/godotenv"
 	"log"
 	"os"
@@ -21,7 +22,7 @@ func GetDBConfig() *DBConfig {
 	err := godotenv.Load(".env.dev")
 
 	if err != nil {
-		log.Fatalln("Error loading env file")
+		fmt.Println("Error loading env file", err)
 	}
 
 	// Get the value of the PORT environment variable
