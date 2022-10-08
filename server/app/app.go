@@ -39,6 +39,12 @@ func (a *App) Initialize(dbConfig *config.DBConfig) {
 	config.InitFirebaseApp()
 }
 
+func (a *App) HandleRequest(f func(db *gorm.DB, w http.ResponseWriter, r *http.Request)) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		f(a.DB, w, r)
+	}
+}
+
 func (a *App) Run(addr string) {
 	go log.Printf("Server started on PORT %s\n\n", addr)
 	err := http.ListenAndServe(addr, a.Router)
