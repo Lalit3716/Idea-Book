@@ -1,13 +1,5 @@
 package config
 
-import (
-	"fmt"
-	"github.com/joho/godotenv"
-	"log"
-	"os"
-	"strconv"
-)
-
 type DBConfig struct {
 	Dialect  string
 	Host     string
@@ -19,26 +11,13 @@ type DBConfig struct {
 }
 
 func GetDBConfig() *DBConfig {
-	err := godotenv.Load(".env.dev")
-
-	if err != nil {
-		fmt.Println("Error loading env file", err)
-	}
-
-	// Get the value of the PORT environment variable
-	port, e := strconv.ParseInt(os.Getenv("DB_PORT"), 10, 16)
-
-	if e != nil {
-		log.Fatalln("Error parsing DB_PORT in env file")
-	}
-
 	return &DBConfig{
-		Dialect:  os.Getenv("DB_DIALECT"),
-		Host:     os.Getenv("DB_HOST"),
-		Port:     port,
-		Username: os.Getenv("DB_USERNAME"),
-		Password: os.Getenv("DB_PASSWORD"),
-		Dbname:   os.Getenv("DB_NAME"),
+		Dialect:  "mysql",
+		Host:     "localhost",
+		Port:     3307,
+		Username: "root",
+		Password: "root",
+		Dbname:   "ideabook",
 		Charset:  "utf8mb4",
 	}
 }
