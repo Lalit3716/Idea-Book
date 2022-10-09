@@ -1,17 +1,14 @@
 package com.example.idea_book.domain.use_cases.auth
 
-import com.example.idea_book.core.validators.EmailValidator
-import com.example.idea_book.core.validators.PasswordValidator
-import com.example.idea_book.core.validators.UsernameValidator
+import com.example.idea_book.core.validators.emailValidator
+import com.example.idea_book.core.validators.passwordValidator
+import com.example.idea_book.core.validators.usernameValidator
 import com.example.idea_book.domain.model.AuthActionResult
 import com.example.idea_book.domain.repository.AuthRepository
 import javax.inject.Inject
 
 class SignUpUseCase @Inject constructor(
     private val authRepository: AuthRepository,
-    private val usernameValidator: UsernameValidator,
-    private val passwordValidator: PasswordValidator,
-    private val emailValidator: EmailValidator
 ){
     suspend operator fun invoke(username: String, email: String, password: String): AuthActionResult {
         val emailErr = emailValidator(email)
