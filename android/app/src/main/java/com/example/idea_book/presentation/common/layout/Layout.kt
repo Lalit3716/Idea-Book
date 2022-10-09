@@ -1,21 +1,33 @@
 package com.example.idea_book.presentation.common.layout
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.*
+import androidx.compose.material.FabPosition
+import androidx.compose.material.Icon
+import androidx.compose.material.Scaffold
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
+import com.example.idea_book.core.constants.Lightbulb
 import kotlinx.coroutines.launch
 import com.example.idea_book.domain.model.MenuItem
+import com.example.idea_book.presentation.destinations.AuthScreenDestination
+import com.example.idea_book.presentation.destinations.IdeasScreenDestination
+import com.example.idea_book.presentation.destinations.ProfileScreenDestination
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
 @Composable
 fun Layout(
+    navigator: DestinationsNavigator,
+    viewModel: LayoutViewModel = hiltViewModel(),
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
+    val user = viewModel.user
+
     val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
@@ -26,12 +38,7 @@ fun Layout(
         ),
         MenuItem(
             title = "Your Ideas",
-            icon = {
-                Icon(
-                    painter = painterResource(id = com.example.idea_book.R.drawable.ic_light_bulb),
-                    contentDescription = "Your Ideas"
-                )
-            },
+            icon = { Icon(Icons.Filled.Lightbulb, contentDescription = "Your Ideas") },
         ),
         MenuItem(
             title = "Profile",
@@ -52,8 +59,20 @@ fun Layout(
         floatingActionButton = floatingActionButton,
         drawerContent = {
             Column {
-                DrawerHeader()
-                DrawerBody(items = drawerItems, onItemClick = {})
+                DrawerHeader(user.displayName!!) {
+                    viewModel.signOut {
+                        navigator.navigate(
+                            AuthScreenDestination
+                        )
+                    }
+                }
+                DrawerBody(items = drawerItems, onItemClick = { menuItem ->
+                    when (menuItem.title) {
+                        "Home" -> navigator.navigate(IdeasScreenDestination)
+                        "Your Ideas" -> navigator.navigate(IdeasScreenDestination)
+                        "Profile" -> navigator.navigate(ProfileScreenDestination)
+                    }
+                })
             }
         },
         content = { content() }
