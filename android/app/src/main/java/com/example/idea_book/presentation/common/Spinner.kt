@@ -1,4 +1,4 @@
-package com.example.idea_book.core.presentation.components
+package com.example.idea_book.presentation.common
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size

@@ -1,4 +1,4 @@
-package com.example.idea_book.core.presentation.components
+package com.example.idea_book.presentation.common
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.MaterialTheme

@@ -1,6 +1,5 @@
 package com.example.idea_book.presentation.auth
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -15,7 +14,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.R
-import com.example.idea_book.core.presentation.components.BlankScreen
+import com.example.idea_book.presentation.common.BlankScreen
 import com.example.idea_book.presentation.auth.components.AuthForm
 import com.example.idea_book.presentation.destinations.IdeasScreenDestination
 import com.example.idea_book.presentation.destinations.OnBoardingScreenDestination
