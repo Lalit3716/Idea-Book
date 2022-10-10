@@ -85,7 +85,24 @@ func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := db.Model(&models.Idea{}).Where("id = ?", id).Updates(idea)
+	// Find the idea
+	result := db.First(&idea, id)
+
+	if result.Error != nil {
+		utils.ResponseJSON(w, http.StatusNotFound, "Idea not found")
+		return
+	}
+
+	// Check if the user is the owner of the idea
+	uid := r.Context().Value("uid").(string)
+
+	if idea.UserUid != uid {
+		utils.ResponseJSON(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	// Update the idea
+	result = db.Model(&idea).Updates(idea)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
@@ -105,7 +122,26 @@ func DeleteIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := db.Delete(&models.Idea{}, id)
+	// Find the idea
+	var idea models.Idea
+
+	result := db.First(&idea, id)
+
+	if result.Error != nil {
+		utils.ResponseJSON(w, http.StatusNotFound, "Idea not found")
+		return
+	}
+
+	// Check if the user is the owner of the idea
+	uid := r.Context().Value("uid").(string)
+
+	if idea.UserUid != uid {
+		utils.ResponseJSON(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	// Delete the idea
+	result = db.Delete(&idea)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
