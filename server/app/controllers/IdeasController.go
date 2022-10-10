@@ -52,6 +52,12 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	uid := r.Context().Value("uid").(string)
+	idea.UserUid = uid
+
+	username := r.Context().Value("username").(string)
+	idea.Username = username
+
 	result := db.Create(&idea)
 
 	if result.Error != nil {
@@ -59,7 +65,7 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusCreated, idea)
+	utils.ResponseJSON(w, http.StatusCreated, "Idea created successfully")
 }
 
 func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {

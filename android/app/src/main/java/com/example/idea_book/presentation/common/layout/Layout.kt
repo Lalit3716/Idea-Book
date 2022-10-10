@@ -1,17 +1,14 @@
 package com.example.idea_book.presentation.common.layout
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.material.FabPosition
-import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
+import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.rememberScaffoldState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.idea_book.core.constants.Lightbulb
+import com.example.idea_book.core.constants.LightBulb
 import kotlinx.coroutines.launch
 import com.example.idea_book.domain.model.MenuItem
 import com.example.idea_book.presentation.destinations.AuthScreenDestination
@@ -23,12 +20,11 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 fun Layout(
     navigator: DestinationsNavigator,
     viewModel: LayoutViewModel = hiltViewModel(),
+    scaffoldState: ScaffoldState = rememberScaffoldState(),
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable () -> Unit
 ) {
     val user = viewModel.user
-
-    val scaffoldState = rememberScaffoldState()
     val coroutineScope = rememberCoroutineScope()
 
     val drawerItems: List<MenuItem> = listOf(
@@ -38,7 +34,7 @@ fun Layout(
         ),
         MenuItem(
             title = "Your Ideas",
-            icon = { Icon(Icons.Filled.Lightbulb, contentDescription = "Your Ideas") },
+            icon = { Icon(LightBulb, contentDescription = "Your Ideas") },
         ),
         MenuItem(
             title = "Profile",

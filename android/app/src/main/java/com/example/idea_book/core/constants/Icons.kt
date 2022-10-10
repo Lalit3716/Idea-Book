@@ -1,16 +1,15 @@
 package com.example.idea_book.core.constants
 
-import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.materialIcon
 import androidx.compose.material.icons.materialPath
 import androidx.compose.ui.graphics.vector.ImageVector
 
-public val Icons.Filled.Lightbulb: ImageVector
+val LightBulb: ImageVector
     get() {
-        if (_lightbulb != null) {
-            return _lightbulb!!
+        if (lightBulb != null) {
+            return lightBulb!!
         }
-        _lightbulb = materialIcon(name = "Filled.Lightbulb") {
+        lightBulb = materialIcon(name = "Filled.LightBulb") {
             materialPath {
                 moveTo(9.0f, 21.0f)
                 curveToRelative(0.0f, 0.5f, 0.4f, 1.0f, 1.0f, 1.0f)
@@ -33,15 +32,15 @@ public val Icons.Filled.Lightbulb: ImageVector
                 close()
             }
         }
-        return _lightbulb!!
+        return lightBulb!!
     }
 
-public val Icons.Filled.Sort: ImageVector
+val Sort: ImageVector
     get() {
-        if (_sort != null) {
-            return _sort!!
+        if (sort != null) {
+            return sort!!
         }
-        _sort = materialIcon(name = "Filled.Sort") {
+        sort = materialIcon(name = "Filled.Sort") {
             materialPath {
                 moveTo(3.0f, 18.0f)
                 horizontalLineToRelative(6.0f)
@@ -63,8 +62,43 @@ public val Icons.Filled.Sort: ImageVector
                 close()
             }
         }
-        return _sort!!
+        return sort!!
     }
 
-private var _lightbulb: ImageVector? = null
-private var _sort: ImageVector? = null
+val Save: ImageVector
+    get() {
+        if (save != null) {
+            return save!!
+        }
+        save = materialIcon(name = "Filled.Save") {
+            materialPath {
+                moveTo(17.0f, 3.0f)
+                lineTo(5.0f, 3.0f)
+                curveToRelative(-1.11f, 0.0f, -2.0f, 0.9f, -2.0f, 2.0f)
+                verticalLineToRelative(14.0f)
+                curveToRelative(0.0f, 1.1f, 0.89f, 2.0f, 2.0f, 2.0f)
+                horizontalLineToRelative(14.0f)
+                curveToRelative(1.1f, 0.0f, 2.0f, -0.9f, 2.0f, -2.0f)
+                lineTo(21.0f, 7.0f)
+                lineToRelative(-4.0f, -4.0f)
+                close()
+                moveTo(12.0f, 19.0f)
+                curveToRelative(-1.66f, 0.0f, -3.0f, -1.34f, -3.0f, -3.0f)
+                reflectiveCurveToRelative(1.34f, -3.0f, 3.0f, -3.0f)
+                reflectiveCurveToRelative(3.0f, 1.34f, 3.0f, 3.0f)
+                reflectiveCurveToRelative(-1.34f, 3.0f, -3.0f, 3.0f)
+                close()
+                moveTo(15.0f, 9.0f)
+                lineTo(5.0f, 9.0f)
+                lineTo(5.0f, 5.0f)
+                horizontalLineToRelative(10.0f)
+                verticalLineToRelative(4.0f)
+                close()
+            }
+        }
+        return save!!
+    }
+
+private var save: ImageVector? = null
+private var lightBulb: ImageVector? = null
+private var sort: ImageVector? = null

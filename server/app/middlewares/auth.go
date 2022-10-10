@@ -1,7 +1,7 @@
 package middlewares
 
 import (
-	"fmt"
+	"context"
 	"github.com/Lalit3716/ideabook_server/app/config"
 	"net/http"
 )
@@ -18,7 +18,9 @@ func authMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		fmt.Println("Verified ID token:", idToken)
-		next.ServeHTTP(w, r)
+		var ctxWithUser = context.WithValue(r.Context(), "uid", idToken.UID)
+		ctxWithUser = context.WithValue(ctxWithUser, "username", idToken.Claims["name"])
+
+		next.ServeHTTP(w, r.WithContext(ctxWithUser))
 	})
 }
