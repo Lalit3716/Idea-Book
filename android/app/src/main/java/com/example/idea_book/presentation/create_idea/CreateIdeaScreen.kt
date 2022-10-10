@@ -23,6 +23,7 @@ import com.example.idea_book.core.constants.Save
 import com.example.idea_book.domain.model.IdeaModel
 import com.example.idea_book.presentation.common.layout.Layout
 import com.example.idea_book.presentation.create_idea.components.TransparentHintTextField
+import com.example.idea_book.presentation.destinations.IdeasScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
@@ -51,7 +52,7 @@ fun CreateIdeaScreen(
             when (it) {
                 is CreateIdeaViewModel.UIEvents.ShowSnackBar -> {
                     scaffoldState.snackbarHostState.showSnackbar(it.message)
-                    navigator.navigateUp()
+                    navigator.navigate(IdeasScreenDestination)
                 }
             }
         }

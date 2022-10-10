@@ -1,6 +1,8 @@
 package com.example.idea_book.presentation.ideas
 
-data class IdeasScreenEvent(
-    val IdeaClick: (Int) -> Unit,
-    val IdeaDeleteClick: (Int) -> Unit
-)
+import com.example.idea_book.domain.model.IdeaModel
+
+sealed class IdeasScreenEvent {
+    data class DeleteIdea(val idea: IdeaModel): IdeasScreenEvent()
+    object RestoreIdea: IdeasScreenEvent()
+}

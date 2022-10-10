@@ -70,18 +70,18 @@ fun IdeaItem(
             Text(
                 text = idea.title,
                 style = MaterialTheme.typography.h6,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(1.dp))
             Text(
                 text = idea.username,
-                style = MaterialTheme.typography.body1.copy(
+                style = MaterialTheme.typography.body2.copy(
                     fontStyle = FontStyle.Italic,
                     fontWeight = MaterialTheme.typography.h6.fontWeight
                 ),
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -89,7 +89,7 @@ fun IdeaItem(
             Text(
                 text = idea.description,
                 style = MaterialTheme.typography.body1,
-                color = MaterialTheme.colors.onSurface,
+                color = Color.Black,
                 maxLines = 10,
                 overflow = TextOverflow.Ellipsis
             )
@@ -102,7 +102,7 @@ fun IdeaItem(
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = "Delete note",
-                    tint = MaterialTheme.colors.onSurface
+                    tint = Color.Black
                 )
             }
     }

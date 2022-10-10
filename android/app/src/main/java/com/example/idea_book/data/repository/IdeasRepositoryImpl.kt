@@ -29,4 +29,9 @@ class IdeasRepositoryImpl @Inject constructor(
         ideaBookApi.createIdea(ideaReq, token)
         return true
     }
+
+    override suspend fun deleteIdea(id: Int, token: String): Boolean {
+        ideaBookApi.deleteIdea(id, token)
+        return true
+    }
 }

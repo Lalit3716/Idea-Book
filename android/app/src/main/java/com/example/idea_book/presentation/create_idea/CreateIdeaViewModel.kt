@@ -16,17 +16,20 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateIdeaViewModel @Inject constructor(
-    private val getTokenUseCase: GetTokenUseCase,
-    private val createIdeasUseCase: CreateIdeaUseCase
+    private val getTokenUseCase: GetTokenUseCase, private val createIdeasUseCase: CreateIdeaUseCase
 ) : ViewModel() {
-    private val _ideaTitle = mutableStateOf(IdeaTextFieldState(
-        hint = "Enter title..."
-    ))
+    private val _ideaTitle = mutableStateOf(
+        IdeaTextFieldState(
+            hint = "Enter title..."
+        )
+    )
     val ideaTitle: State<IdeaTextFieldState> = _ideaTitle
 
-    private val _ideaContent = mutableStateOf(IdeaTextFieldState(
-        hint = "Enter content..."
-    ))
+    private val _ideaContent = mutableStateOf(
+        IdeaTextFieldState(
+            hint = "Enter content..."
+        )
+    )
     val ideaContent: State<IdeaTextFieldState> = _ideaContent
 
     private val _ideaColor = mutableStateOf(IdeaModel.ideaColors.random().toArgb())
@@ -36,7 +39,7 @@ class CreateIdeaViewModel @Inject constructor(
     val events = _events.asSharedFlow()
 
     fun onEvent(event: CreateIdeaEvent) {
-        when(event) {
+        when (event) {
             is CreateIdeaEvent.EnteredTitle -> {
                 _ideaTitle.value = _ideaTitle.value.copy(
                     text = event.value
@@ -44,8 +47,7 @@ class CreateIdeaViewModel @Inject constructor(
             }
             is CreateIdeaEvent.ChangeTitleFocus -> {
                 _ideaTitle.value = _ideaTitle.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            ideaTitle.value.text.isBlank()
+                    isHintVisible = !event.focusState.isFocused && ideaTitle.value.text.isBlank()
                 )
             }
             is CreateIdeaEvent.EnteredContent -> {
@@ -55,8 +57,7 @@ class CreateIdeaViewModel @Inject constructor(
             }
             is CreateIdeaEvent.ChangeContentFocus -> {
                 _ideaContent.value = _ideaContent.value.copy(
-                    isHintVisible = !event.focusState.isFocused &&
-                            _ideaContent.value.text.isBlank()
+                    isHintVisible = !event.focusState.isFocused && _ideaContent.value.text.isBlank()
                 )
             }
             is CreateIdeaEvent.ChangeColor -> {
@@ -71,13 +72,15 @@ class CreateIdeaViewModel @Inject constructor(
                         color = ideaColor.value,
                         token = token!!
                     )
-                    _events.emit(UIEvents.ShowSnackBar("Idea created successfully!"))
+                    _ideaTitle.value = _ideaTitle.value.copy(text = "")
+                    _ideaContent.value = _ideaContent.value.copy(text = "")
+                    _events.emit(UIEvents.ShowSnackBar("Idea created successfully! You will be redirected to the home screen in a few seconds."))
                 }
             }
         }
     }
 
     sealed class UIEvents {
-        data class ShowSnackBar(val message: String): UIEvents()
+        data class ShowSnackBar(val message: String) : UIEvents()
     }
 }
