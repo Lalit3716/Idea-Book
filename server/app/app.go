@@ -7,6 +7,7 @@ import (
 	"github.com/gorilla/mux"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 	"log"
 	"net/http"
 )
@@ -26,7 +27,9 @@ func (a *App) Initialize(dbConfig *config.DBConfig) {
 		dbConfig.Charset,
 	)
 
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Error),
+	})
 
 	if err != nil {
 		log.Fatal("Could not connect database")

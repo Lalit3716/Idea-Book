@@ -9,14 +9,45 @@ import (
 	"strconv"
 )
 
-func GetIdeas(db *gorm.DB, w http.ResponseWriter, _ *http.Request) {
-	var ideas []models.Idea
+type CreateIdeaDao struct {
+	models.Idea
+	Tags []string `json:"tags"`
+}
 
-	err := db.Model(&models.Idea{}).Preload("Likes").Preload("Tags").Find(&ideas).Error
+func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var ideas []models.Idea
+	queryParams := r.URL.Query()
+
+	tags, err := utils.ParseTags(db, queryParams.Get("tags"), ",")
 
 	if err != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, err)
+		utils.ResponseJSON(w, http.StatusBadRequest, "Invalid tags")
 		return
+	}
+
+	search := queryParams.Get("search")
+	ogSearch := search
+	if search == "" {
+		search = "%%"
+	} else {
+		search = "%" + search + "%"
+	}
+
+	if len(tags) == 0 {
+		result := db.Where("title LIKE ? OR description LIKE ?", search, search).Preload("Likes").Preload("Tags").Find(&ideas)
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+	} else {
+		err := db.Preload("Likes").Model(&tags).Association("Ideas").Find(&ideas)
+
+		ideas = utils.FilterIdeas(ideas, ogSearch)
+
+		if err != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, err)
+			return
+		}
 	}
 
 	utils.ResponseJSON(w, http.StatusOK, ideas)
@@ -45,18 +76,23 @@ func GetIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
-	var idea models.Idea
+	var reqBody CreateIdeaDao
 
-	if err := utils.ParseJSON(r, &idea); err != nil {
+	if err := utils.ParseJSON(r, &reqBody); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, err)
 		return
 	}
+
+	var idea models.Idea
 
 	uid := r.Context().Value("uid").(string)
 	idea.UserUid = uid
 
 	username := r.Context().Value("username").(string)
 	idea.Username = username
+
+	idea.Title = reqBody.Title
+	idea.Description = reqBody.Description
 
 	result := db.Create(&idea)
 
@@ -65,8 +101,30 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	var tags []models.Tag
+
+	for _, tag := range reqBody.Tags {
+		var t models.Tag
+
+		result := db.First(&t, "name = ?", tag)
+
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+
+		tags = append(tags, t)
+	}
+
+	err := db.Model(&idea).Association("Tags").Append(tags)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, err)
+		return
+	}
+
 	idea.Likes = make([]models.Like, 0)
 	idea.Comments = make([]models.Comment, 0)
+	idea.Tags = tags
 	utils.ResponseJSON(w, http.StatusCreated, idea)
 }
 

@@ -23,4 +23,8 @@ func SetupRoutes(a *app.App) {
 	// Comment Routes
 	router.HandleFunc("/api/v1/ideas/{id}/comments", a.HandleRequest(controllers.PostComment)).Methods("POST")
 	router.HandleFunc("/api/v1/ideas/{id}/comments/{cid}", a.HandleRequest(controllers.DeleteComment)).Methods("DELETE")
+
+	// Tag Routes
+	router.HandleFunc("/api/v1/tags", a.HandleRequest(controllers.GetTags)).Methods("GET")
+	router.HandleFunc("/api/v1/tags", a.HandleRequest(controllers.CreateTag)).Methods("POST")
 }
