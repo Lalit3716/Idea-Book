@@ -5,7 +5,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://localhost:3307/ideabook</jdbc-url>
+      <jdbc-url>jdbc:mysql://localhost:3306/ideabook</jdbc-url>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
     <data-source source="LOCAL" name="Production" uuid="b948f991-97d7-4a6b-9a51-0be327aa73ca">

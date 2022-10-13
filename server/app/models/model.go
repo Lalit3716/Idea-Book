@@ -6,7 +6,7 @@ import (
 )
 
 func DBMigrate(db *gorm.DB) *gorm.DB {
-	err := db.AutoMigrate(&Idea{})
+	err := db.AutoMigrate(&Idea{}, &Like{})
 	if err != nil {
 		log.Fatal("Could not migrate the tables")
 	}

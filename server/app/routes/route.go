@@ -15,4 +15,8 @@ func SetupRoutes(a *app.App) {
 	router.HandleFunc("/api/v1/ideas/{id}", a.HandleRequest(controllers.GetIdea)).Methods("GET")
 	router.HandleFunc("/api/v1/ideas/{id}", a.HandleRequest(controllers.UpdateIdea)).Methods("PUT")
 	router.HandleFunc("/api/v1/ideas/{id}", a.HandleRequest(controllers.DeleteIdea)).Methods("DELETE")
+
+	// Like Routes
+	router.HandleFunc("/api/v1/ideas/{id}/like", a.HandleRequest(controllers.LikeIdea)).Methods("POST")
+	router.HandleFunc("/api/v1/ideas/{id}/like", a.HandleRequest(controllers.DisLikeIdea)).Methods("DELETE")
 }

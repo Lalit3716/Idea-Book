@@ -12,10 +12,10 @@ import (
 func GetIdeas(db *gorm.DB, w http.ResponseWriter, _ *http.Request) {
 	var ideas []models.Idea
 
-	result := db.Find(&ideas)
+	err := db.Model(&models.Idea{}).Preload("Likes").Find(&ideas).Error
 
-	if result.Error != nil {
-		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, err)
 		return
 	}
 
@@ -34,7 +34,7 @@ func GetIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var idea models.Idea
 
-	result := db.First(&idea, id)
+	result := db.Model(&models.Idea{}).Preload("Likes").First(&idea, id)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
