@@ -19,4 +19,8 @@ func SetupRoutes(a *app.App) {
 	// Like Routes
 	router.HandleFunc("/api/v1/ideas/{id}/like", a.HandleRequest(controllers.LikeIdea)).Methods("POST")
 	router.HandleFunc("/api/v1/ideas/{id}/like", a.HandleRequest(controllers.DisLikeIdea)).Methods("DELETE")
+
+	// Comment Routes
+	router.HandleFunc("/api/v1/ideas/{id}/comments", a.HandleRequest(controllers.PostComment)).Methods("POST")
+	router.HandleFunc("/api/v1/ideas/{id}/comments/{cid}", a.HandleRequest(controllers.DeleteComment)).Methods("DELETE")
 }

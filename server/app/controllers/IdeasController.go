@@ -12,7 +12,7 @@ import (
 func GetIdeas(db *gorm.DB, w http.ResponseWriter, _ *http.Request) {
 	var ideas []models.Idea
 
-	err := db.Model(&models.Idea{}).Preload("Likes").Find(&ideas).Error
+	err := db.Model(&models.Idea{}).Preload("Likes").Preload("Tags").Find(&ideas).Error
 
 	if err != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, err)
@@ -34,7 +34,7 @@ func GetIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var idea models.Idea
 
-	result := db.Model(&models.Idea{}).Preload("Likes").First(&idea, id)
+	result := db.Model(&models.Idea{}).Preload("Likes").Preload("Comments").Preload("Tags").First(&idea, id)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
@@ -65,7 +65,9 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusCreated, "Idea created successfully")
+	idea.Likes = make([]models.Like, 0)
+	idea.Comments = make([]models.Comment, 0)
+	utils.ResponseJSON(w, http.StatusCreated, idea)
 }
 
 func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -109,7 +111,7 @@ func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusOK, "Idea updated successfully")
+	utils.ResponseJSON(w, http.StatusOK, idea)
 }
 
 func DeleteIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -141,7 +143,7 @@ func DeleteIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Delete the idea
-	result = db.Delete(&idea)
+	result = db.Unscoped().Select("Comments", "Likes").Delete(&idea)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)

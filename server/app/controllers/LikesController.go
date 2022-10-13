@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"github.com/Lalit3716/ideabook_server/app/models"
 	"github.com/Lalit3716/ideabook_server/utils"
 	"github.com/gorilla/mux"
@@ -30,8 +31,9 @@ func LikeIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var like models.Like
 
-	err1 := db.Model(&idea).Where("UserID = ?", uid).Association("Likes").Find(&like)
+	err1 := db.Model(&like).Where("user_id = ? AND idea_id = ?", uid, id).First(&like).Error
 	if err1 == nil {
+		fmt.Println("Already liked!")
 		utils.ResponseJSON(w, http.StatusBadRequest, "Already liked!")
 		return
 	}
@@ -70,7 +72,7 @@ func DisLikeIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var like models.Like
 
-	err1 := db.Model(&idea).Where("UserID = ?", uid).Association("Likes").Find(&like)
+	err1 := db.Model(&like).Where("user_id = ? AND idea_id = ?", uid, id).First(&like).Error
 	if err1 != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, "Already disliked!")
 		return
@@ -81,6 +83,8 @@ func DisLikeIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		utils.ResponseJSON(w, http.StatusInternalServerError, "Error disliking idea")
 		return
 	}
+
+	db.Unscoped().Delete(&like)
 
 	utils.ResponseJSON(w, http.StatusOK, "Disliked idea")
 }
