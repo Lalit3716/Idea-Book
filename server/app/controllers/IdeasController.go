@@ -26,6 +26,18 @@ func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	search := queryParams.Get("search")
+	orderBy := queryParams.Get("orderBy")
+	sort := queryParams.Get("sort")
+
+	if orderBy == "" {
+		orderBy = "created_at"
+	}
+
+	if sort == "" {
+		sort = "desc"
+	}
+
+	order := orderBy + " " + sort
 	ogSearch := search
 	if search == "" {
 		search = "%%"
@@ -34,13 +46,13 @@ func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	if len(tags) == 0 {
-		result := db.Where("title LIKE ? OR description LIKE ?", search, search).Preload("Likes").Preload("Tags").Find(&ideas)
+		result := db.Where("title LIKE ? OR description LIKE ?", search, search).Preload("Likes").Preload("Tags").Order(order).Find(&ideas)
 		if result.Error != nil {
 			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
 			return
 		}
 	} else {
-		err := db.Preload("Likes").Model(&tags).Association("Ideas").Find(&ideas)
+		err := db.Unscoped().Preload("Likes").Model(&tags).Association("Ideas").Find(&ideas, "title LIKE ? ORDER BY "+order, "%%")
 
 		ideas = utils.FilterIdeas(ideas, ogSearch)
 

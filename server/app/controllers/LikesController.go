@@ -48,6 +48,10 @@ func LikeIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	idea.LikesTotal++
+
+	db.Save(&idea)
+
 	utils.ResponseJSON(w, http.StatusOK, "Liked idea")
 }
 
@@ -85,6 +89,10 @@ func DisLikeIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	db.Unscoped().Delete(&like)
+
+	idea.LikesTotal--
+
+	db.Save(&idea)
 
 	utils.ResponseJSON(w, http.StatusOK, "Disliked idea")
 }

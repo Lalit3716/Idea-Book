@@ -12,5 +12,6 @@ type Idea struct {
 	Likes         []Like    `json:"likes"`
 	Comments      []Comment `json:"comments"`
 	CommentsTotal int       `json:"comments_total"`
+	LikesTotal    int       `json:"likes_total"`
 	Tags          []Tag     `json:"tags" gorm:"many2many:idea_tags;"`
 }
