@@ -30,7 +30,8 @@ fun CreateIdeaScreen(
             when (it) {
                 is CreateIdeaViewModel.UIEvents.ShowSnackBar -> {
                     scaffoldState.snackbarHostState.showSnackbar(it.message)
-                    navigator.navigate(IdeasScreenDestination)
+                    if (it.navigate)
+                        navigator.navigate(IdeasScreenDestination)
                 }
             }
         }

@@ -1,5 +1,6 @@
 package com.example.idea_book.domain.use_cases.ideas
 
+import com.example.idea_book.core.utils.ActionResult
 import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.domain.repository.IdeasRepository
 import javax.inject.Inject
@@ -12,7 +13,15 @@ class CreateIdeaUseCase @Inject constructor(
         content: String,
         tags: List<TagModel>,
         token: String
-    ): Boolean {
+    ): ActionResult {
+        if (title.isEmpty()) {
+            return ActionResult.Error("Title cannot be empty")
+        } else if (content.isEmpty()) {
+            return ActionResult.Error("Content cannot be empty")
+        } else if (tags.isEmpty()) {
+            return ActionResult.Error("You must select at least one tag")
+        }
+
         ideasRepository.createIdea(
             title = title,
             description = content,
@@ -20,6 +29,6 @@ class CreateIdeaUseCase @Inject constructor(
             token = token
         )
 
-        return true
+        return ActionResult.Success
     }
 }

@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.idea_book.core.utils.ActionResult
 import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
 import com.example.idea_book.domain.use_cases.ideas.CreateIdeaUseCase
@@ -85,25 +86,33 @@ class CreateIdeaViewModel @Inject constructor(
             is CreateIdeaEvent.SaveIdea -> {
                 viewModelScope.launch {
                     val token = getTokenUseCase()
-                    createIdeasUseCase(
+                    val res = createIdeasUseCase(
                         title = ideaTitle.value.text,
                         content = ideaContent.value.text,
                         tags = selectedTags,
                         token = token!!
                     )
-                    _ideaTitle.value = IdeaTextFieldState(
-                        hint = "Enter title..."
-                    )
-                    _ideaContent.value = IdeaTextFieldState(
-                        hint = "Enter content..."
-                    )
-                    _events.emit(UIEvents.ShowSnackBar("Idea created successfully! You will be redirected to the home screen in a few seconds."))
+
+                    when (res) {
+                        is ActionResult.Error -> {
+                            _events.emit(UIEvents.ShowSnackBar(res.message, false))
+                        }
+                        is ActionResult.Success -> {
+                            _ideaTitle.value = IdeaTextFieldState(
+                                hint = "Enter title..."
+                            )
+                            _ideaContent.value = IdeaTextFieldState(
+                                hint = "Enter content..."
+                            )
+                            _events.emit(UIEvents.ShowSnackBar("Idea created successfully! You will be redirected to the home screen in a few seconds.", true))
+                        }
+                    }
                 }
             }
         }
     }
 
     sealed class UIEvents {
-        data class ShowSnackBar(val message: String) : UIEvents()
+        data class ShowSnackBar(val message: String, val navigate: Boolean) : UIEvents()
     }
 }
