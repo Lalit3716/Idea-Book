@@ -38,4 +38,14 @@ class IdeasRepositoryImpl @Inject constructor(
     override suspend fun getTags(token: String): List<TagModel> {
         return ideaBookApi.getTags(token)
     }
+
+    override suspend fun likeIdea(id: Int, token: String): Boolean {
+        ideaBookApi.likeIdea(id, token)
+        return true
+    }
+
+    override suspend fun unlikeIdea(id: Int, token: String): Boolean {
+        ideaBookApi.unlikeIdea(id, token)
+        return true
+    }
 }

@@ -1,7 +1,5 @@
 package com.example.idea_book.domain.model
 
-import com.example.idea_book.ui.theme.*
-
 data class IdeaModel(
     val id: Int,
     val title: String,
@@ -10,7 +8,9 @@ data class IdeaModel(
     val user_id: String,
     val likes_total: Int,
     val comments_total: Int,
-    val tags: List<TagModel>
+    val tags: List<TagModel>,
+    val likes: List<String>,
+    val created_at: String,
 )
 
 data class TagModel(

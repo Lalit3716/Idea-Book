@@ -30,6 +30,7 @@ fun IdeasScreen(
     viewModel: IdeasViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
+    val userId = viewModel.userId
 
     val scaffoldState = rememberScaffoldState()
 
@@ -118,6 +119,8 @@ fun IdeasScreen(
                         IdeaItem(
                             idea = it,
                             selectedTags = state.selectedTags,
+                            liked = it.likes.contains(userId),
+                            onLikeClick = viewModel::likeIdea,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),

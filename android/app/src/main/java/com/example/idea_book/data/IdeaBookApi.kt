@@ -23,4 +23,10 @@ interface IdeaBookApi {
 
     @GET("tags")
     suspend fun getTags(@Header("Authorization") token: String): List<TagModel>
+
+    @POST("ideas/{id}/like")
+    suspend fun likeIdea(@Path("id") id: Int, @Header("Authorization") token: String): String
+
+    @DELETE("ideas/{id}/like")
+    suspend fun unlikeIdea(@Path("id") id: Int, @Header("Authorization") token: String): String
 }

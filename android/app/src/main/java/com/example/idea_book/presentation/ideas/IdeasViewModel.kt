@@ -6,10 +6,14 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
+import com.example.idea_book.domain.use_cases.auth.GetUserUseCase
 import com.example.idea_book.domain.use_cases.ideas.GetIdeasUseCase
 import com.example.idea_book.domain.use_cases.ideas.GetTagsUseCase
+import com.example.idea_book.domain.use_cases.ideas.LikeIdeaUseCase
+import com.example.idea_book.domain.use_cases.ideas.UnLikeIdeaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -20,7 +24,13 @@ class IdeasViewModel @Inject constructor(
     private val getTokenUseCase: GetTokenUseCase,
     private val getIdeasUseCase: GetIdeasUseCase,
     private val getTagsUseCase: GetTagsUseCase,
+    private val likeIdeaUseCase: LikeIdeaUseCase,
+    private val unLikeIdeaUseCase: UnLikeIdeaUseCase,
+    getUserUseCase: GetUserUseCase
 ) : ViewModel() {
+    private var _user by mutableStateOf(getUserUseCase())
+    val userId get() = _user?.uid
+
     private var _state by mutableStateOf(IdeasScreenState())
 
     val state: IdeasScreenState
@@ -64,6 +74,19 @@ class IdeasViewModel @Inject constructor(
                     )
                 }
                 getIdeas()
+            }
+        }
+    }
+
+    fun likeIdea(ideaId: Int, isLiked: Boolean) {
+        viewModelScope.launch {
+            val token = getTokenUseCase()
+            if (token != null) {
+                if (isLiked) {
+                    likeIdeaUseCase(ideaId, token)
+                } else {
+                    unLikeIdeaUseCase(ideaId, token)
+                }
             }
         }
     }

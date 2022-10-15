@@ -34,51 +34,55 @@ fun TagList(
         modifier = modifier.fillMaxWidth()
     ) {
         items(tags) { tag ->
-            Card(
-                shape = RoundedCornerShape(8.dp),
-                modifier = Modifier.padding(end = 16.dp),
-                elevation = 8.dp,
-            ) {
-                Row(
-                    modifier = Modifier
-                        .clickable { onTagSelected(tag) }
-                        .background(
-                            color = if (selectedTags.contains(tag)) {
-                                BlueTint
-                            } else {
-                                MaterialTheme.colors.surface
-                            }
-                        )
-                        .border(
-                            width = 1.dp,
-                            color = if (selectedTags.contains(tag)) {
-                                BlueBorder
-                            } else {
-                                MaterialTheme.colors.onSurface
-                            },
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .padding(horizontal = 15.dp, vertical = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    if (tag.icon.isNotEmpty()) {
-                        AsyncImage(
-                            model = ImageRequest.Builder(LocalContext.current)
-                                .data(tag.icon)
-                                .build(),
-                            contentDescription = tag.name,
-                            modifier = Modifier
-                                .size(20.dp)
-                                .clip(CircleShape)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Text(
-                        text = tag.name,
-                    )
-                }
+            Chip(text = tag.name, active = selectedTags.contains(tag), icon = tag.icon) {
+                onTagSelected(tag)
             }
+
+//            Card(
+//                shape = RoundedCornerShape(8.dp),
+//                modifier = Modifier.padding(end = 16.dp),
+//                elevation = 8.dp,
+//            ) {
+//                Row(
+//                    modifier = Modifier
+//                        .clickable { onTagSelected(tag) }
+//                        .background(
+//                            color = if (selectedTags.contains(tag)) {
+//                                BlueTint
+//                            } else {
+//                                MaterialTheme.colors.surface
+//                            }
+//                        )
+//                        .border(
+//                            width = 1.dp,
+//                            color = if (selectedTags.contains(tag)) {
+//                                BlueBorder
+//                            } else {
+//                                MaterialTheme.colors.onSurface
+//                            },
+//                            shape = RoundedCornerShape(8.dp)
+//                        )
+//                        .padding(horizontal = 15.dp, vertical = 4.dp),
+//                    verticalAlignment = Alignment.CenterVertically,
+//                    horizontalArrangement = Arrangement.Center
+//                ) {
+//                    if (tag.icon.isNotEmpty()) {
+//                        AsyncImage(
+//                            model = ImageRequest.Builder(LocalContext.current)
+//                                .data(tag.icon)
+//                                .build(),
+//                            contentDescription = tag.name,
+//                            modifier = Modifier
+//                                .size(20.dp)
+//                                .clip(CircleShape)
+//                        )
+//                        Spacer(modifier = Modifier.width(8.dp))
+//                    }
+//                    Text(
+//                        text = tag.name,
+//                    )
+//                }
+//            }
         }
     }
 }

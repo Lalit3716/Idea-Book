@@ -1,7 +1,14 @@
 package com.example.idea_book.data.dto.response
 
+import com.example.idea_book.core.utils.timeAgo
 import com.example.idea_book.domain.model.IdeaModel
 import com.example.idea_book.domain.model.TagModel
+
+data class LikeModel(
+    val id: Int,
+    val user_id: String,
+    val idea_id: Int,
+)
 
 data class IdeaRes(
     val CreatedAt: String,
@@ -14,7 +21,8 @@ data class IdeaRes(
     val username: String,
     val likes_total: Int,
     val comments_total: Int,
-    val tags: List<TagModel>
+    val tags: List<TagModel>,
+    val likes: List<LikeModel>
 )
 
 fun IdeaRes.toModel(): IdeaModel {
@@ -26,6 +34,8 @@ fun IdeaRes.toModel(): IdeaModel {
         user_id = user_id,
         likes_total = likes_total,
         comments_total = comments_total,
-        tags = tags
+        tags = tags,
+        likes = likes.map { it.user_id },
+        created_at = CreatedAt.timeAgo()
     )
 }
