@@ -6,32 +6,39 @@ import (
 	"strings"
 )
 
-func ParseTags(db *gorm.DB, tagsStr string, delimiter string) ([]models.Tag, error) {
-	var tagArray []string
-	var tags []models.Tag
+func ParseTags(db *gorm.DB, tagsStr string, delimiter string) ([]uint, error) {
+	var tagsArray []string
+	var tags []uint
+
 	if tagsStr != "" {
-		tagArray = strings.Split(tagsStr, delimiter)
+		tagsArray = strings.Split(tagsStr, delimiter)
 	}
 
-	for _, tag := range tagArray {
+	for _, tag := range tagsArray {
 		var t models.Tag
 		result := db.Where("name = ?", tag).First(&t)
 		if result.Error != nil {
 			return nil, result.Error
 		}
-		tags = append(tags, t)
+		tags = append(tags, t.ID)
 	}
 
 	return tags, nil
 }
 
-func FilterIdeas(ideas []models.Idea, search string) []models.Idea {
-	search = strings.ToLower(search)
-	for i, idea := range ideas {
-		if !strings.Contains(strings.ToLower(idea.Title), search) && !strings.Contains(strings.ToLower(idea.Description), search) {
-			ideas = append(ideas[:i], ideas[i+1:]...)
+func UniqueIdeas(ideas []models.Idea) []models.Idea {
+	keys := make(map[uint]bool)
+	var list []models.Idea
+	for _, entry := range ideas {
+		if _, value := keys[entry.ID]; !value {
+			keys[entry.ID] = true
+			list = append(list, entry)
 		}
 	}
 
-	return ideas
+	if list == nil {
+		list = make([]models.Idea, 0)
+	}
+
+	return list
 }

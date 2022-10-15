@@ -1,13 +1,14 @@
 package com.example.idea_book.presentation.create_idea
 
 import androidx.compose.runtime.State
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.idea_book.domain.model.IdeaModel
+import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
 import com.example.idea_book.domain.use_cases.ideas.CreateIdeaUseCase
+import com.example.idea_book.domain.use_cases.ideas.GetTagsUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -16,8 +17,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreateIdeaViewModel @Inject constructor(
-    private val getTokenUseCase: GetTokenUseCase, private val createIdeasUseCase: CreateIdeaUseCase
+    private val getTokenUseCase: GetTokenUseCase,
+    private val createIdeasUseCase: CreateIdeaUseCase,
+    private val getAllTagsUseCase: GetTagsUseCase
 ) : ViewModel() {
+    private val _tags = mutableStateListOf<TagModel>()
+    val tags: List<TagModel> get() = _tags
+
+    private val _selectedTags = mutableStateListOf<TagModel>()
+    val selectedTags: List<TagModel> get() = _selectedTags
+
     private val _ideaTitle = mutableStateOf(
         IdeaTextFieldState(
             hint = "Enter title..."
@@ -32,11 +41,17 @@ class CreateIdeaViewModel @Inject constructor(
     )
     val ideaContent: State<IdeaTextFieldState> = _ideaContent
 
-    private val _ideaColor = mutableStateOf(IdeaModel.ideaColors.random().toArgb())
-    val ideaColor: State<Int> = _ideaColor
-
     private val _events = MutableSharedFlow<UIEvents>()
     val events = _events.asSharedFlow()
+
+    init {
+        viewModelScope.launch {
+            val token = getTokenUseCase()
+            if (token != null) {
+                _tags.addAll(getAllTagsUseCase(token))
+            }
+        }
+    }
 
     fun onEvent(event: CreateIdeaEvent) {
         when (event) {
@@ -60,8 +75,12 @@ class CreateIdeaViewModel @Inject constructor(
                     isHintVisible = !event.focusState.isFocused && _ideaContent.value.text.isBlank()
                 )
             }
-            is CreateIdeaEvent.ChangeColor -> {
-                _ideaColor.value = event.color
+            is CreateIdeaEvent.TagSelected -> {
+                if (_selectedTags.contains(event.value)) {
+                    _selectedTags.remove(event.value)
+                } else {
+                    _selectedTags.add(event.value)
+                }
             }
             is CreateIdeaEvent.SaveIdea -> {
                 viewModelScope.launch {
@@ -69,11 +88,15 @@ class CreateIdeaViewModel @Inject constructor(
                     createIdeasUseCase(
                         title = ideaTitle.value.text,
                         content = ideaContent.value.text,
-                        color = ideaColor.value,
+                        tags = selectedTags,
                         token = token!!
                     )
-                    _ideaTitle.value = _ideaTitle.value.copy(text = "")
-                    _ideaContent.value = _ideaContent.value.copy(text = "")
+                    _ideaTitle.value = IdeaTextFieldState(
+                        hint = "Enter title..."
+                    )
+                    _ideaContent.value = IdeaTextFieldState(
+                        hint = "Enter content..."
+                    )
                     _events.emit(UIEvents.ShowSnackBar("Idea created successfully! You will be redirected to the home screen in a few seconds."))
                 }
             }

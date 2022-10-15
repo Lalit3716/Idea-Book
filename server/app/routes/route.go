@@ -26,5 +26,5 @@ func SetupRoutes(a *app.App) {
 
 	// Tag Routes
 	router.HandleFunc("/api/v1/tags", a.HandleRequest(controllers.GetTags)).Methods("GET")
-	router.HandleFunc("/api/v1/tags", a.HandleRequest(controllers.CreateTag)).Methods("POST")
+	router.HandleFunc("/api/v1/tags", a.HandleRequest(controllers.SeedTags)).Methods("POST")
 }

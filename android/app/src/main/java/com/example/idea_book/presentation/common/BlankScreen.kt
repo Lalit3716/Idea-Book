@@ -10,10 +10,11 @@ import androidx.compose.ui.Modifier
 
 @Composable
 fun BlankScreen(
+    modifier: Modifier = Modifier,
     showLoadingSpinner: Boolean = false,
 ) {
     Surface(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         color = MaterialTheme.colors.background,
         contentColor = MaterialTheme.colors.onBackground
     ) {

@@ -6,12 +6,15 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.presentation.common.BlankScreen
+import com.example.idea_book.presentation.common.TagList
 import com.example.idea_book.presentation.common.layout.Layout
 import com.example.idea_book.presentation.destinations.CreateIdeaScreenDestination
 import com.example.idea_book.presentation.ideas.components.IdeaItem
@@ -27,27 +30,16 @@ fun IdeasScreen(
     viewModel: IdeasViewModel = hiltViewModel()
 ) {
     val state = viewModel.state
-    val user = viewModel.user
 
     val scaffoldState = rememberScaffoldState()
-
-    if (state.isLoading) {
-        BlankScreen(showLoadingSpinner = true)
-        return
-    }
 
     LaunchedEffect(key1 = true) {
         viewModel.events.collectLatest {
             when (it) {
                 is IdeasViewModel.UIEvent.ShowSnackBar -> {
-                    val result = scaffoldState.snackbarHostState.showSnackbar(
-                        message = "Idea deleted successfully",
-                        actionLabel = "Undo"
+                    scaffoldState.snackbarHostState.showSnackbar(
+                        message = it.msg,
                     )
-
-                    if (result == SnackbarResult.ActionPerformed) {
-                        viewModel.onEvent(IdeasScreenEvent.RestoreIdea)
-                    }
                 }
             }
         }
@@ -67,30 +59,68 @@ fun IdeasScreen(
             color = MaterialTheme.colors.background,
             contentColor = MaterialTheme.colors.onBackground
         ) {
-            if (state.ideas.isEmpty()) {
-                NoContent()
-            } else {
-                Spacer(modifier = Modifier.height(8.dp))
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(16.dp)
-                ) {
-                    item {
-                        Text(
-                            modifier = Modifier.padding(16.dp),
-                            text = "Hi ${user?.displayName}, here are some fresh ideas for you!",
-                            style = MaterialTheme.typography.h5
-                        )
+            Spacer(modifier = Modifier.height(8.dp))
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+            ) {
+                item {
+                    TagList(
+                        modifier = Modifier.padding(horizontal = 16.dp),
+                        tags = state.tags,
+                        selectedTags = state.selectedTags
+                    ) {
+                        viewModel.onEvent(IdeasScreenEvent.TagSelected(it))
                     }
+                }
+                item {
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        TextField(
+                            value = state.search,
+                            onValueChange = { viewModel.onEvent(IdeasScreenEvent.SearchChanged(it)) },
+                            label = { Text("Search") },
+                            modifier = Modifier
+                                .weight(1f),
+                            leadingIcon = {
+                                Icon(
+                                    Icons.Filled.Search,
+                                    contentDescription = "Search"
+                                )
+                            },
+                            singleLine = true
+                        )
+                        Spacer(modifier = Modifier.width(15.dp))
+                        Button(
+                            onClick = { viewModel.onEvent(IdeasScreenEvent.SearchIdeas) },
+                            modifier = Modifier.height(55.dp)
+                        ) {
+                            Text("Search")
+                        }
+                    }
+                }
+                if (state.isLoading) {
+                    item {
+                        BlankScreen(showLoadingSpinner = true, modifier = Modifier.height(300.dp))
+                    }
+                } else if (state.ideas.isEmpty()) {
+                    item {
+                        NoContent()
+                    }
+                } else {
                     items(state.ideas) {
                         IdeaItem(
                             idea = it,
+                            selectedTags = state.selectedTags,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(16.dp),
-                            showDelete = user?.uid == it.user_id,
-                            onDeleteClick = { viewModel.onEvent(IdeasScreenEvent.DeleteIdea(it)) }
                         )
                     }
                 }

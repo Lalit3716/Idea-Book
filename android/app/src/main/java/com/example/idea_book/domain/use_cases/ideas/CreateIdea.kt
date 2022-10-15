@@ -1,5 +1,6 @@
 package com.example.idea_book.domain.use_cases.ideas
 
+import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.domain.repository.IdeasRepository
 import javax.inject.Inject
 
@@ -9,13 +10,13 @@ class CreateIdeaUseCase @Inject constructor(
     suspend operator fun invoke(
         title: String,
         content: String,
-        color: Int,
+        tags: List<TagModel>,
         token: String
     ): Boolean {
         ideasRepository.createIdea(
             title = title,
             description = content,
-            color = color,
+            tags = tags,
             token = token
         )
 

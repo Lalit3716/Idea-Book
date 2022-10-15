@@ -1,76 +1,41 @@
 package com.example.idea_book.presentation.ideas.components
 
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Card
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.core.graphics.ColorUtils
 import com.example.idea_book.domain.model.IdeaModel
+import com.example.idea_book.domain.model.TagModel
+import com.example.idea_book.presentation.common.TagList
 
 @Composable
 fun IdeaItem(
     idea: IdeaModel,
+    selectedTags: List<TagModel>,
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 10.dp,
-    cutCornerSize: Dp = 30.dp,
-    showDelete: Boolean,
-    onDeleteClick: () -> Unit
 ) {
-    Box(
-        modifier = modifier
+    Card(
+        shape = RoundedCornerShape(8.dp),
+        modifier = modifier,
+        elevation = 8.dp,
     ) {
-        Canvas(modifier = Modifier.matchParentSize()) {
-            val clipPath = Path().apply {
-                lineTo(size.width - cutCornerSize.toPx(), 0f)
-                lineTo(size.width, cutCornerSize.toPx())
-                lineTo(size.width, size.height)
-                lineTo(0f, size.height)
-                close()
-            }
-
-            clipPath(clipPath) {
-                drawRoundRect(
-                    color = Color(idea.color),
-                    size = size,
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
-                )
-                drawRoundRect(
-                    color = Color(
-                        ColorUtils.blendARGB(idea.color, 0x000000, 0.2f)
-                    ),
-                    topLeft = Offset(size.width - cutCornerSize.toPx(), -100f),
-                    size = Size(cutCornerSize.toPx() + 100f, cutCornerSize.toPx() + 100f),
-                    cornerRadius = CornerRadius(cornerRadius.toPx())
-                )
-            }
-        }
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .padding(end = 32.dp)
+                .padding(end = 2.dp)
         ) {
+            TagList(tags = idea.tags, selectedTags = selectedTags)
+            Spacer(modifier = Modifier.height(5.dp))
             Text(
                 text = idea.title,
                 style = MaterialTheme.typography.h6,
-                color = Color.Black,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -81,7 +46,7 @@ fun IdeaItem(
                     fontStyle = FontStyle.Italic,
                     fontWeight = MaterialTheme.typography.h6.fontWeight
                 ),
-                color = Color.Black,
+
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
@@ -89,21 +54,9 @@ fun IdeaItem(
             Text(
                 text = idea.description,
                 style = MaterialTheme.typography.body1,
-                color = Color.Black,
                 maxLines = 10,
                 overflow = TextOverflow.Ellipsis
             )
         }
-        if (showDelete)
-            IconButton(
-                onClick = onDeleteClick,
-                modifier = Modifier.align(Alignment.BottomEnd)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete note",
-                    tint = Color.Black
-                )
-            }
     }
 }

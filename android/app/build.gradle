@@ -107,4 +107,8 @@ dependencies {
     // Accompanist
     implementation "com.google.accompanist:accompanist-pager:$accompanist_version"
     implementation "com.google.accompanist:accompanist-pager-indicators:$accompanist_version"
+
+    // Coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
 }

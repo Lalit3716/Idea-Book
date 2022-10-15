@@ -38,7 +38,7 @@ func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	}
 
 	order := orderBy + " " + sort
-	ogSearch := search
+	//ogSearch := search
 	if search == "" {
 		search = "%%"
 	} else {
@@ -52,14 +52,18 @@ func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	} else {
-		err := db.Unscoped().Preload("Likes").Model(&tags).Association("Ideas").Find(&ideas, "title LIKE ? ORDER BY "+order, "%%")
-
-		ideas = utils.FilterIdeas(ideas, ogSearch)
-
-		if err != nil {
-			utils.ResponseJSON(w, http.StatusInternalServerError, err)
+		result := db.Joins("JOIN idea_tags ON idea_tags.idea_id = id").Where("idea_tags.tag_id IN (?) AND (title LIKE ? OR description LIKE ?)", tags, search, search).Preload("Likes").Preload("Tags").Order(order).Find(&ideas)
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
 			return
 		}
+
+		utils.ResponseJSON(w, http.StatusOK, utils.UniqueIdeas(ideas))
+		return
+	}
+
+	if ideas == nil {
+		ideas = make([]models.Idea, 0)
 	}
 
 	utils.ResponseJSON(w, http.StatusOK, ideas)
@@ -137,7 +141,7 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	idea.Likes = make([]models.Like, 0)
 	idea.Comments = make([]models.Comment, 0)
 	idea.Tags = tags
-	utils.ResponseJSON(w, http.StatusCreated, idea)
+	utils.ResponseJSON(w, http.StatusCreated, "Created Successfully")
 }
 
 func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
@@ -181,7 +185,7 @@ func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.ResponseJSON(w, http.StatusOK, idea)
+	utils.ResponseJSON(w, http.StatusOK, "Updated Idea Successfully")
 }
 
 func DeleteIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
