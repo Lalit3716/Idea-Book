@@ -29,4 +29,7 @@ interface IdeaBookApi {
 
     @DELETE("ideas/{id}/like")
     suspend fun unlikeIdea(@Path("id") id: Int, @Header("Authorization") token: String): String
+
+    @GET("ideas/me")
+    suspend fun getMyIdeas(@Header("Authorization") token: String, @Query("tags") tags: String? = "", @Query("search") search: String? = ""): List<IdeaRes>
 }

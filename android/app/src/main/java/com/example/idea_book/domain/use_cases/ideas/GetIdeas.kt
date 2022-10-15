@@ -8,8 +8,17 @@ import javax.inject.Inject
 class GetIdeasUseCase @Inject constructor(
     private val ideasRepository: IdeasRepository
 ) {
-    suspend operator fun invoke(token: String, tags: List<TagModel>, searchQuery: String): List<IdeaModel> {
+    suspend operator fun invoke(
+        token: String,
+        tags: List<TagModel>,
+        searchQuery: String,
+        myIdeas: Boolean = false
+    ): List<IdeaModel> {
         val tagsString = tags.joinToString(",") { it.name }
+
+        if (myIdeas) {
+            return ideasRepository.getMyIdeas(token, tagsString, searchQuery)
+        }
 
         return ideasRepository.getIdeas(token, tagsString, searchQuery)
     }

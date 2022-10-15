@@ -69,6 +69,63 @@ func GetIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	utils.ResponseJSON(w, http.StatusOK, ideas)
 }
 
+func GetYourIdeas(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
+	var ideas []models.Idea
+	queryParams := r.URL.Query()
+
+	tags, err := utils.ParseTags(db, queryParams.Get("tags"), ",")
+
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusBadRequest, "Invalid tags")
+		return
+	}
+
+	search := queryParams.Get("search")
+	orderBy := queryParams.Get("orderBy")
+	sort := queryParams.Get("sort")
+
+	if orderBy == "" {
+		orderBy = "created_at"
+	}
+
+	if sort == "" {
+		sort = "desc"
+	}
+
+	order := orderBy + " " + sort
+	//ogSearch := search
+	if search == "" {
+		search = "%%"
+	} else {
+		search = "%" + search + "%"
+	}
+
+	uid := r.Context().Value("uid").(string)
+
+	if len(tags) == 0 {
+		result := db.Where("user_uid = ? AND (title LIKE ? OR description LIKE ?)", uid, search, search).Preload("Likes").Preload("Tags").Order(order).Find(&ideas)
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+	} else {
+		result := db.Joins("JOIN idea_tags ON idea_tags.idea_id = id").Where("idea_tags.tag_id IN (?) AND (title LIKE ? OR description LIKE ?) AND (user_uid = ?)", tags, search, search, uid).Preload("Likes").Preload("Tags").Order(order).Find(&ideas)
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+
+		utils.ResponseJSON(w, http.StatusOK, utils.UniqueIdeas(ideas))
+		return
+	}
+
+	if ideas == nil {
+		ideas = make([]models.Idea, 0)
+	}
+
+	utils.ResponseJSON(w, http.StatusOK, ideas)
+}
+
 func GetIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 

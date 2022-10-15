@@ -3,6 +3,7 @@ package com.example.idea_book.presentation.ideas
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
@@ -13,7 +14,6 @@ import com.example.idea_book.domain.use_cases.ideas.LikeIdeaUseCase
 import com.example.idea_book.domain.use_cases.ideas.UnLikeIdeaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.launch
@@ -26,7 +26,8 @@ class IdeasViewModel @Inject constructor(
     private val getTagsUseCase: GetTagsUseCase,
     private val likeIdeaUseCase: LikeIdeaUseCase,
     private val unLikeIdeaUseCase: UnLikeIdeaUseCase,
-    getUserUseCase: GetUserUseCase
+    getUserUseCase: GetUserUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private var _user by mutableStateOf(getUserUseCase())
     val userId get() = _user?.uid
@@ -95,7 +96,12 @@ class IdeasViewModel @Inject constructor(
         getIdeasJob?.cancel()
         getIdeasJob = viewModelScope.launch {
             val safeToken = token ?: getTokenUseCase()
-            val ideas = getIdeasUseCase(safeToken!!, state.selectedTags, state.search)
+            val ideas = getIdeasUseCase(
+                safeToken!!,
+                state.selectedTags,
+                state.search,
+                myIdeas = savedStateHandle.get<Boolean>("myIdeas") ?: false
+            )
             _state = _state.copy(ideas = ideas, isLoading = false)
         }
     }

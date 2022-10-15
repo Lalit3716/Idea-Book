@@ -34,7 +34,7 @@ fun AuthScreen(
     LaunchedEffect(key1 = state.isAuth) {
         if (state.isAuth) {
             if (state.isLoginMode) {
-                navigator?.navigate(IdeasScreenDestination)
+                navigator?.navigate(IdeasScreenDestination())
             } else {
                 navigator?.navigate(OnBoardingScreenDestination)
             }

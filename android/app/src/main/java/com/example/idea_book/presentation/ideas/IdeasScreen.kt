@@ -27,7 +27,8 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun IdeasScreen(
     navigator: DestinationsNavigator,
-    viewModel: IdeasViewModel = hiltViewModel()
+    viewModel: IdeasViewModel = hiltViewModel(),
+    myIdeas: Boolean = false
 ) {
     val state = viewModel.state
     val userId = viewModel.userId
@@ -66,6 +67,18 @@ fun IdeasScreen(
                     .fillMaxSize()
                     .padding(16.dp)
             ) {
+                if (myIdeas) {
+                    item {
+                        Text(
+                            "Your Ideas",
+                            style = MaterialTheme.typography.h5,
+                            modifier = Modifier.padding(start = 16.dp)
+                        )
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                }
                 item {
                     TagList(
                         modifier = Modifier.padding(horizontal = 16.dp),
@@ -80,7 +93,9 @@ fun IdeasScreen(
                 }
                 item {
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         TextField(
@@ -100,7 +115,7 @@ fun IdeasScreen(
                         Spacer(modifier = Modifier.width(15.dp))
                         Button(
                             onClick = { viewModel.onEvent(IdeasScreenEvent.SearchIdeas) },
-                            modifier = Modifier.height(55.dp)
+                            modifier = Modifier.height(52.dp)
                         ) {
                             Text("Search")
                         }

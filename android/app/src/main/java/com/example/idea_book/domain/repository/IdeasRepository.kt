@@ -15,4 +15,5 @@ interface IdeasRepository {
     suspend fun getTags(token: String): List<TagModel>
     suspend fun likeIdea(id: Int, token: String): Boolean
     suspend fun unlikeIdea(id: Int, token: String): Boolean
+    suspend fun getMyIdeas(token: String, tags: String = "", searchQuery: String = ""): List<IdeaModel>
 }

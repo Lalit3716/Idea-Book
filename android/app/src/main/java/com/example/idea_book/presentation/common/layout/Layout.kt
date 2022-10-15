@@ -64,8 +64,8 @@ fun Layout(
                 }
                 DrawerBody(items = drawerItems, onItemClick = { menuItem ->
                     when (menuItem.title) {
-                        "Home" -> navigator.navigate(IdeasScreenDestination)
-                        "Your Ideas" -> navigator.navigate(IdeasScreenDestination)
+                        "Home" -> navigator.navigate(IdeasScreenDestination())
+                        "Your Ideas" -> navigator.navigate(IdeasScreenDestination(true))
                         "Profile" -> navigator.navigate(ProfileScreenDestination)
                     }
                 })

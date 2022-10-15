@@ -39,6 +39,14 @@ class IdeasRepositoryImpl @Inject constructor(
         return ideaBookApi.getTags(token)
     }
 
+    override suspend fun getMyIdeas(
+        token: String,
+        tags: String,
+        searchQuery: String
+    ): List<IdeaModel> {
+        return ideaBookApi.getMyIdeas(token, tags, searchQuery).map { it.toModel() }
+    }
+
     override suspend fun likeIdea(id: Int, token: String): Boolean {
         ideaBookApi.likeIdea(id, token)
         return true

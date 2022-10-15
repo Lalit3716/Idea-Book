@@ -76,7 +76,7 @@ fun OnBoardingScreen(
                     modifier = Modifier
                         .fillMaxWidth(.5f)
                         .padding(horizontal = 8.dp),
-                    onClick = { navigator?.navigate(IdeasScreenDestination) },
+                    onClick = { navigator?.navigate(IdeasScreenDestination()) },
                     colors = ButtonDefaults.outlinedButtonColors(
                         backgroundColor = MaterialTheme.colors.primary,
                         contentColor = MaterialTheme.colors.onPrimary
