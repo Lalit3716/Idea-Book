@@ -17,6 +17,7 @@ import com.example.idea_book.presentation.common.BlankScreen
 import com.example.idea_book.presentation.common.TagList
 import com.example.idea_book.presentation.common.layout.Layout
 import com.example.idea_book.presentation.destinations.CreateIdeaScreenDestination
+import com.example.idea_book.presentation.destinations.IdeaScreenDestination
 import com.example.idea_book.presentation.ideas.components.IdeaItem
 import com.example.idea_book.presentation.ideas.components.NoContent
 import com.ramcosta.composedestinations.annotation.Destination
@@ -51,7 +52,7 @@ fun IdeasScreen(
         navigator = navigator,
         scaffoldState = scaffoldState,
         floatingActionButton = {
-            FloatingActionButton(onClick = { navigator.navigate(CreateIdeaScreenDestination) }) {
+            FloatingActionButton(onClick = { navigator.navigate(CreateIdeaScreenDestination()) }) {
                 Icon(Icons.Filled.Add, "addIcon")
             }
         }
@@ -135,6 +136,7 @@ fun IdeasScreen(
                             idea = it,
                             selectedTags = state.selectedTags,
                             liked = it.likes.contains(userId),
+                            onIdeaClick = { navigator.navigate(IdeaScreenDestination(it.id)) },
                             onLikeClick = viewModel::likeIdea,
                             modifier = Modifier
                                 .fillMaxWidth()

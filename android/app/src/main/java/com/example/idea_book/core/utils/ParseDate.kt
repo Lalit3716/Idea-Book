@@ -22,6 +22,12 @@ fun String.timeAgo(): String {
     }
 }
 
+fun String.prettyPrintDate(): String {
+    val date = this.toDate()
+    val dateFormat = SimpleDateFormat("MMM dd, yyyy", Locale.getDefault())
+    return dateFormat.format(date)
+}
+
 fun String.toDate(): Date {
     // format: 2022-10-15T15:43:54.646+05:30
     val format = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX", Locale.getDefault())

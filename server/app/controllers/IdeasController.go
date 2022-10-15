@@ -203,6 +203,7 @@ func CreateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
+	var reqBody CreateIdeaDao
 
 	id, err := strconv.Atoi(params["id"])
 
@@ -213,7 +214,7 @@ func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	var idea models.Idea
 
-	if err := utils.ParseJSON(r, &idea); err != nil {
+	if err := utils.ParseJSON(r, &reqBody); err != nil {
 		utils.ResponseJSON(w, http.StatusBadRequest, err)
 		return
 	}
@@ -234,8 +235,33 @@ func UpdateIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Update the idea
-	result = db.Model(&idea).Updates(idea)
+	var tags []models.Tag
+
+	for _, tag := range reqBody.Tags {
+		var t models.Tag
+
+		result := db.First(&t, "name = ?", tag)
+
+		if result.Error != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
+			return
+		}
+
+		tags = append(tags, t)
+	}
+
+	if len(tags) > 0 {
+		err := db.Model(&idea).Association("Tags").Replace(tags)
+		if err != nil {
+			utils.ResponseJSON(w, http.StatusInternalServerError, err)
+			return
+		}
+	}
+
+	idea.Title = reqBody.Title
+	idea.Description = reqBody.Description
+
+	result = db.Save(&idea)
 
 	if result.Error != nil {
 		utils.ResponseJSON(w, http.StatusInternalServerError, result.Error)
@@ -270,6 +296,13 @@ func DeleteIdea(db *gorm.DB, w http.ResponseWriter, r *http.Request) {
 
 	if idea.UserUid != uid {
 		utils.ResponseJSON(w, http.StatusUnauthorized, "Unauthorized")
+		return
+	}
+
+	// Delete the Tags Associations first
+	err = db.Model(&idea).Association("Tags").Clear()
+	if err != nil {
+		utils.ResponseJSON(w, http.StatusInternalServerError, err)
 		return
 	}
 

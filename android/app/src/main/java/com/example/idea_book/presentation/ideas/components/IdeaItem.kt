@@ -1,5 +1,6 @@
 package com.example.idea_book.presentation.ideas.components
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.example.idea_book.core.utils.timeAgo
 import com.example.idea_book.domain.model.IdeaModel
 import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.presentation.common.Chip
@@ -25,6 +27,7 @@ fun IdeaItem(
     idea: IdeaModel,
     selectedTags: List<TagModel>,
     liked: Boolean,
+    onIdeaClick: () -> Unit,
     onLikeClick: (ideaId: Int, ideaLiked: Boolean) -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -48,6 +51,7 @@ fun IdeaItem(
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .clickable(onClick = onIdeaClick)
                 .padding(16.dp)
                 .padding(end = 2.dp)
         ) {
@@ -84,7 +88,7 @@ fun IdeaItem(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = idea.created_at,
+                    text = idea.created_at.timeAgo(),
                     style = MaterialTheme.typography.body2.copy(
                         fontStyle = FontStyle.Italic,
                         fontWeight = MaterialTheme.typography.h6.fontWeight,
@@ -102,7 +106,7 @@ fun IdeaItem(
                     }
                     debounceJob?.cancel()
                     debounceJob = scope.launch {
-                        delay(1000)
+                        delay(800)
                         if (initialLike != ideaLiked) {
                             onLikeClick(idea.id, ideaLiked)
                             initialLike = ideaLiked

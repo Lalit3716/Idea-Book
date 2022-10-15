@@ -1,5 +1,8 @@
 package com.example.idea_book.domain.model
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
 data class IdeaModel(
     val id: Int,
     val title: String,

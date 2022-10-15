@@ -8,6 +8,7 @@ import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.POST
+import retrofit2.http.PUT
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -32,4 +33,10 @@ interface IdeaBookApi {
 
     @GET("ideas/me")
     suspend fun getMyIdeas(@Header("Authorization") token: String, @Query("tags") tags: String? = "", @Query("search") search: String? = ""): List<IdeaRes>
+
+    @GET("ideas/{id}")
+    suspend fun getIdea(@Path("id") id: Int, @Header("Authorization") token: String): IdeaRes
+
+    @PUT("ideas/{id}")
+    suspend fun updateIdea(@Path("id") id: Int, @Body idea: IdeaReq, @Header("Authorization") token: String): String
 }

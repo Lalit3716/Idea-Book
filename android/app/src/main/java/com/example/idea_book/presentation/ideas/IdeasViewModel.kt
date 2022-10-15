@@ -83,11 +83,13 @@ class IdeasViewModel @Inject constructor(
         viewModelScope.launch {
             val token = getTokenUseCase()
             if (token != null) {
-                if (isLiked) {
-                    likeIdeaUseCase(ideaId, token)
-                } else {
-                    unLikeIdeaUseCase(ideaId, token)
-                }
+                try {
+                    if (isLiked) {
+                        likeIdeaUseCase(ideaId, token)
+                    } else {
+                        unLikeIdeaUseCase(ideaId, token)
+                    }
+                } catch (_: Exception) {}
             }
         }
     }

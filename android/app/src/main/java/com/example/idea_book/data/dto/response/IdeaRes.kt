@@ -1,6 +1,5 @@
 package com.example.idea_book.data.dto.response
 
-import com.example.idea_book.core.utils.timeAgo
 import com.example.idea_book.domain.model.IdeaModel
 import com.example.idea_book.domain.model.TagModel
 
@@ -36,6 +35,6 @@ fun IdeaRes.toModel(): IdeaModel {
         comments_total = comments_total,
         tags = tags,
         likes = likes.map { it.user_id },
-        created_at = CreatedAt.timeAgo()
+        created_at = CreatedAt
     )
 }

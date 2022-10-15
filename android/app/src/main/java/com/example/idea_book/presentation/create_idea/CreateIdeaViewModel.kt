@@ -3,13 +3,16 @@ package com.example.idea_book.presentation.create_idea
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.idea_book.core.utils.ActionResult
 import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.domain.use_cases.auth.GetTokenUseCase
 import com.example.idea_book.domain.use_cases.ideas.CreateIdeaUseCase
+import com.example.idea_book.domain.use_cases.ideas.GetIdeaUseCase
 import com.example.idea_book.domain.use_cases.ideas.GetTagsUseCase
+import com.example.idea_book.domain.use_cases.ideas.UpdateIdeaUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -20,7 +23,10 @@ import javax.inject.Inject
 class CreateIdeaViewModel @Inject constructor(
     private val getTokenUseCase: GetTokenUseCase,
     private val createIdeasUseCase: CreateIdeaUseCase,
-    private val getAllTagsUseCase: GetTagsUseCase
+    private val updateIdeaUseCase: UpdateIdeaUseCase,
+    private val getAllTagsUseCase: GetTagsUseCase,
+    private val getIdeaUseCase: GetIdeaUseCase,
+    private val savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     private val _tags = mutableStateListOf<TagModel>()
     val tags: List<TagModel> get() = _tags
@@ -30,14 +36,14 @@ class CreateIdeaViewModel @Inject constructor(
 
     private val _ideaTitle = mutableStateOf(
         IdeaTextFieldState(
-            hint = "Enter title..."
+            hint = "Enter title"
         )
     )
     val ideaTitle: State<IdeaTextFieldState> = _ideaTitle
 
     private val _ideaContent = mutableStateOf(
         IdeaTextFieldState(
-            hint = "Enter content..."
+            hint = "Enter description"
         )
     )
     val ideaContent: State<IdeaTextFieldState> = _ideaContent
@@ -50,6 +56,15 @@ class CreateIdeaViewModel @Inject constructor(
             val token = getTokenUseCase()
             if (token != null) {
                 _tags.addAll(getAllTagsUseCase(token))
+
+                val ideaId = savedStateHandle.get<String>("ideaId")?.toInt()
+
+                if (ideaId != null) {
+                    val idea = getIdeaUseCase(ideaId, token)
+                    _ideaTitle.value = _ideaTitle.value.copy(text = idea.title, isHintVisible = false)
+                    _ideaContent.value = _ideaContent.value.copy(text = idea.description, isHintVisible = false)
+                    _selectedTags.addAll(idea.tags)
+                }
             }
         }
     }
@@ -86,16 +101,28 @@ class CreateIdeaViewModel @Inject constructor(
             is CreateIdeaEvent.SaveIdea -> {
                 viewModelScope.launch {
                     val token = getTokenUseCase()
-                    val res = createIdeasUseCase(
-                        title = ideaTitle.value.text,
-                        content = ideaContent.value.text,
-                        tags = selectedTags,
-                        token = token!!
-                    )
+                    val ideaId = savedStateHandle.get<String>("ideaId")?.toInt()
+                    val ifUpdating = ideaId != null
+                    val res = if (ifUpdating) {
+                        updateIdeaUseCase(
+                            id = ideaId!!,
+                            title = ideaTitle.value.text,
+                            description = ideaContent.value.text,
+                            tags = _selectedTags,
+                            token = token!!
+                        )
+                    } else {
+                        createIdeasUseCase(
+                            title = ideaTitle.value.text,
+                            content = ideaContent.value.text,
+                            tags = selectedTags,
+                            token = token!!
+                        )
+                    }
 
                     when (res) {
                         is ActionResult.Error -> {
-                            _events.emit(UIEvents.ShowSnackBar(res.message, false))
+                            _events.emit(UIEvents.ShowSnackBar(res.message))
                         }
                         is ActionResult.Success -> {
                             _ideaTitle.value = IdeaTextFieldState(
@@ -104,7 +131,12 @@ class CreateIdeaViewModel @Inject constructor(
                             _ideaContent.value = IdeaTextFieldState(
                                 hint = "Enter content..."
                             )
-                            _events.emit(UIEvents.ShowSnackBar("Idea created successfully! You will be redirected to the home screen in a few seconds.", true))
+                            _events.emit(
+                                UIEvents.ShowSnackBar(
+                                    "Idea ${if (ifUpdating) "updated" else "created"} successfully you will be redirected in a few seconds",
+                                    navigate = if (ifUpdating) "IdeaScreen" else "IdeasScreen"
+                                )
+                            )
                         }
                     }
                 }
@@ -113,6 +145,6 @@ class CreateIdeaViewModel @Inject constructor(
     }
 
     sealed class UIEvents {
-        data class ShowSnackBar(val message: String, val navigate: Boolean) : UIEvents()
+        data class ShowSnackBar(val message: String, val navigate: String? = null) : UIEvents()
     }
 }

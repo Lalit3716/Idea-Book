@@ -7,9 +7,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.idea_book.core.constants.Save
+import com.example.idea_book.domain.model.IdeaModel
+import com.example.idea_book.domain.model.TagModel
 import com.example.idea_book.presentation.common.TagList
 import com.example.idea_book.presentation.common.layout.Layout
 import com.example.idea_book.presentation.create_idea.components.TransparentHintTextField
+import com.example.idea_book.presentation.destinations.IdeaScreenDestination
 import com.example.idea_book.presentation.destinations.IdeasScreenDestination
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
@@ -19,7 +22,8 @@ import kotlinx.coroutines.flow.collectLatest
 @Composable
 fun CreateIdeaScreen(
     navigator: DestinationsNavigator,
-    viewModel: CreateIdeaViewModel = hiltViewModel()
+    viewModel: CreateIdeaViewModel = hiltViewModel(),
+    ideaId: String? = null,
 ) {
     val scaffoldState = rememberScaffoldState()
     val title = viewModel.ideaTitle.value
@@ -30,8 +34,10 @@ fun CreateIdeaScreen(
             when (it) {
                 is CreateIdeaViewModel.UIEvents.ShowSnackBar -> {
                     scaffoldState.snackbarHostState.showSnackbar(it.message)
-                    if (it.navigate)
-                        navigator.navigate(IdeasScreenDestination(true))
+                    when(it.navigate) {
+                        "IdeaScreen" -> navigator.navigate(IdeaScreenDestination(ideaId?.toInt()!!))
+                        "IdeasScreen" -> navigator.navigate(IdeasScreenDestination(true))
+                    }
                 }
             }
         }
