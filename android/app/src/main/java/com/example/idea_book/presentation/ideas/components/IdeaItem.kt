@@ -39,7 +39,7 @@ fun IdeaItem(
         mutableStateOf(idea.likes_total)
     }
     val scope = rememberCoroutineScope()
-    var debounceJob: Job? by rememberSaveable {
+    var debounceJob: Job? by remember {
         mutableStateOf(null)
     }
 

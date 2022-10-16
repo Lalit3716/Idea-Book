@@ -1,5 +1,6 @@
 package com.example.idea_book.presentation.idea
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Surface
