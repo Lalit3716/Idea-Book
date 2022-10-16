@@ -63,6 +63,13 @@ This project is divided into mainly 2 components - **Idea Book** and **Idea Book
   - [ ] Follow Notifications
 - [ ] Realtime Chat [GOOD TO HAVE]
 
+## Svreenshots
+<img src="https://user-images.githubusercontent.com/84276404/196000688-c26d2c6d-8672-44cd-84d6-5696c845c27d.jpg" width="220px"/>
+<img src="https://user-images.githubusercontent.com/84276404/196000688-c26d2c6d-8672-44cd-84d6-5696c845c27d.jpg" width="220px"/>
+<img src="https://user-images.githubusercontent.com/84276404/196000694-b4a46ec6-6ea7-4ee8-a4be-e2d219dc89ad.jpg" width="220px"/>
+<img src="https://user-images.githubusercontent.com/84276404/196000698-74c76e20-6fb7-422d-a61d-f0b87a7b129e.jpg" width="220px"/>
+<img src="https://user-images.githubusercontent.com/84276404/196000700-9e1cd80e-e1f5-4ca3-91d4-396d27b01c80.jpg" width="220px"/>
+
 ## Design Doc for Idea Book
 ![Idea Book HLD (1280 × 1000 px)](https://user-images.githubusercontent.com/84276404/193843040-16f9d3a8-83cc-4f00-af3e-c7fd5c4a2cf3.png)
 
