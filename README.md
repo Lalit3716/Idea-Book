@@ -7,6 +7,8 @@ Then This is the place for you! 🎉
 
 Here you can share your ideas and get help from others to implement them or you can help others to implement their ideas. You can also share your projects and get feedback from others to improve them 🤝
 
+#### Download APK From here: https://github.com/Lalit3716/Idea-Book/releases/tag/v1.0.1
+
 ## Project Components
 
 This project is divided into mainly 2 components - **Idea Book** and **Idea Book API**.:
