@@ -33,24 +33,24 @@ This project is divided into mainly 2 components - **Idea Book** and **Idea Book
 
 ## Features
 
-- [ ] Authentication
-  - [ ] Login
-  - [ ] Signup
-  - [ ] Logout
+- [x] Authentication
+  - [x] Login
+  - [x] Signup
+  - [x] Logout
 - [ ] User
   - [ ] View profile
   - [ ] Edit profile
   - [ ] Follow/Unfollow
 - [ ] Idea
-  - [ ] Create Idea
-  - [ ] Edit Idea
-  - [ ] Delete Idea
-  - [ ] View Idea
-  - [ ] View other people ideas
-  - [ ] Like other people ideas
+  - [x] Create Idea
+  - [x] Edit Idea
+  - [x] Delete Idea
+  - [x] View Idea
+  - [x] View other people ideas
+  - [x] Like other people ideas
   - [ ] Keep track of idea status (In Progress, Completed, Abandoned)
-  - [ ] Advanced search like filtering by tags, status, etc.
-  - [ ] View liked ideas and ideas you created
+  - [x] Advanced search like filtering by tags, status, etc.
+  - [x] View liked ideas and ideas you created
 - [ ] Comment
   - [ ] Create Comment
   - [ ] Edit Comment
@@ -63,7 +63,7 @@ This project is divided into mainly 2 components - **Idea Book** and **Idea Book
   - [ ] Follow Notifications
 - [ ] Realtime Chat [GOOD TO HAVE]
 
-## Svreenshots
+## Screenshots
 <img src="https://user-images.githubusercontent.com/84276404/196000688-c26d2c6d-8672-44cd-84d6-5696c845c27d.jpg" width="220px"/>
 <img src="https://user-images.githubusercontent.com/84276404/196000688-c26d2c6d-8672-44cd-84d6-5696c845c27d.jpg" width="220px"/>
 <img src="https://user-images.githubusercontent.com/84276404/196000694-b4a46ec6-6ea7-4ee8-a4be-e2d219dc89ad.jpg" width="220px"/>
